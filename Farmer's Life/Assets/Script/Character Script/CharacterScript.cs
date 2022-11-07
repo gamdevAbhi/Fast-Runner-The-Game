@@ -6,15 +6,21 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CharacterMovementScript))]
 [RequireComponent(typeof(CharacterControllerScript))]
+[RequireComponent(typeof(CharacterGroundScript))]
 public class CharacterScript : MonoBehaviour
 {
     private CharacterMovementScript characterMovementScript;
     private CharacterControllerScript characterControllerScript;
+    private CharacterGroundScript CharacterGroundScript;
+
+    [Header("Script")]
+    [SerializeField] private KeyMapManagerScript keyMapManagerScript;
 
     private void Awake()
     {
         characterMovementScript = GetComponent<CharacterMovementScript>();
         characterControllerScript = GetComponent<CharacterControllerScript>();
+        CharacterGroundScript = GetComponent<CharacterGroundScript>();
     }
 
     private void Start()
@@ -26,10 +32,29 @@ public class CharacterScript : MonoBehaviour
 
     private void Update()
     {
-        RotationInputCheck();
+        List<string> value = keyMapManagerScript.GetAction("CharacterNonFixedMap");
+        
+        foreach(string command in value)
+        {
+            MoveCharacter(command);
+        }
+
+        value = keyMapManagerScript.GetAction("MouseMove");
+
+        RotateLook(value);
     }
 
-    private void MovementInput(string command)
+    private void FixedUpdate()
+    {
+        List<string> value = keyMapManagerScript.GetAction("CharacterFixedMap");
+        
+        foreach(string command in value)
+        {
+            MoveCharacterFixed(command);
+        }
+    }
+
+    private void MoveCharacter(string command)
     {
         if(command == "Forward")
         {
@@ -39,13 +64,21 @@ public class CharacterScript : MonoBehaviour
         {
             characterMovementScript.MoveBackward();
         }
-        if(command == "Left")
+        else if(command == "Left")
         {
             characterMovementScript.MoveLeft();
         }
-        if(command == "Right")
+        else if(command == "Right")
         {
             characterMovementScript.MoveRight();
+        }
+        else if(command == "Sprint On")
+        {
+            characterMovementScript.Sprint(true);
+        }
+        else if(command == "Sprint Off")
+        {
+            characterMovementScript.Sprint(false);
         }
         else if(command == "")
         {
@@ -53,15 +86,35 @@ public class CharacterScript : MonoBehaviour
         }
     }
 
-    private void RotationInputCheck()
+    private void MoveCharacterFixed(string command)
     {
-        if(Input.GetAxis("Mouse X") != 0f)
+        if(command == "Jump")
         {
-            characterControllerScript.HorizontalRotation(Input.GetAxis("Mouse X"));
+            if(CharacterGroundScript.CanJump() == true)
+            {
+                characterMovementScript.Jump();
+            }
         }
-        if(Input.GetAxis("Mouse Y") != 0f)
-        {
-            characterControllerScript.VerticalRotation(Input.GetAxis("Mouse Y"));
-        }
+    }
+
+    private void RotateLook(List<string> mouseMove)
+    {
+        Vector2 result = new Vector2(float.Parse(mouseMove[0]), float.Parse(mouseMove[1]));
+        characterControllerScript.Rotate(result);
+    }
+
+    private void ChangeMovement(Vector3 vector)
+    {
+        characterMovementScript.ChangeMovementSpeed(vector);
+    }
+
+    private void ChangeSprint(float value)
+    {
+        characterMovementScript.ChangeSprintSpeed(value);
+    }
+
+    private void ChangeJump(float value)
+    {
+        characterMovementScript.ChangeJumpSpeed(value);
     }
 }

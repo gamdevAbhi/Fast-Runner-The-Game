@@ -6,186 +6,114 @@ public class InputManagerScript : MonoBehaviour
 {
     [Header("Keyboard Input")]
     [SerializeField] private List<Key> keys;
-    [SerializeField] private List<PrimaryAction> primaryKey;
-    [SerializeField] private List<ConstantAction> constantKey;
+    [SerializeField] private List<string> keyPressed;
+    [SerializeField] private List<string> keyHold;
+    [SerializeField] private List<string> keyRelease;
 
-    [Header("Script")]
-    [SerializeField] private CharacterScript characterScript;
+    [Header("Mouse Input")]
+    [SerializeField] private Vector2 mouseMove;
 
     private void Update()
     {
+        ClearKeyHistory();
         KeyPress();
+        MouseInput();
     }
 
     private void KeyPress()
     {
-        bool anyKeyPress = false;
-
         foreach(Key key in keys)
         {
             if(Input.GetKeyDown(key.KeyCode()))
             {
-                PrimaryKeyCheck(key.KeyName(), "Press");
-                anyKeyPress = true;
+                keyPressed.Add(key.KeyName());
             }
             else if(Input.GetKey(key.KeyCode()))
             {
-                PrimaryKeyCheck(key.KeyName(), "Hold");
-                anyKeyPress = true;
+                keyHold.Add(key.KeyName());
             }
             else if(Input.GetKeyUp(key.KeyCode()))
             {
-                PrimaryKeyCheck(key.KeyName(), "Release");
-                anyKeyPress = true;
+                keyRelease.Add(key.KeyName());
             }
-        }
-
-        if(anyKeyPress == false)
-        {
-            ActionCommand("Player", "");
         }
     }
 
-    private void PrimaryKeyCheck(string keyName, string method)
+    private void MouseInput()
     {
-        foreach(PrimaryAction primary in primaryKey)
+        mouseMove = Vector2.zero;
+
+        mouseMove.x = Input.GetAxis("Mouse X");
+        mouseMove.y = Input.GetAxis("Mouse Y");
+    }
+
+    protected internal List<string> GetMouseInput()
+    {
+        List<string> result = new List<string>();
+        result.Add(mouseMove.y.ToString());
+        result.Add(mouseMove.x.ToString());
+
+        return result;
+    }
+
+    private void ClearKeyHistory()
+    {
+        keyPressed = new List<string>();
+        keyHold = new List<string>();
+        keyRelease = new List<string>();
+    }
+
+    protected internal List<string> MatchKeys(List<KeyMap> keyMap)
+    {
+        List<string> result = new List<string>();
+
+        foreach(KeyMap key in keyMap)
         {
-            if(primary._ActionType() == method && primary.KeyName() == keyName)
+            if(CheckKey(key.KeyName(), key.GetActionType()))
             {
-                ActionCommand(primary._Target(), primary.ActionName());
-                break;
+                result.Add(key.ActionName());
             }
         }
+
+        return result;
     }
 
-    private KeyCode KeyFind(string keyName)
+    protected internal bool CheckKey(string name, string type)
     {
-        foreach(Key key in keys)
+        bool result = false;
+
+        if(type == "Press")
         {
-            if(key.KeyName() == keyName)
+            foreach(string key in keyPressed)
             {
-                return key.KeyCode();
+                if(key == name)
+                {
+                    result = true;
+                }
             }
         }
-
-        return KeyCode.None;
-    }
-
-    private void ActionCommand(string target, string command)
-    {
-        if(target == "Player")
+        else if(type == "Hold")
         {
-            characterScript.SendMessage("MovementInput", command);
-        }
-    }
-}
-
-
-[System.Serializable]
-public class PrimaryAction : Action
-{
-    [SerializeField] private ActionType actionType;
-    [SerializeField] private Target target;
-    const Prior prior = Prior.Primary;
-
-    protected internal string _ActionType()
-    {
-        string type = "";
-
-        if(actionType == ActionType.Press)
-        {
-            type = "Press";
-        }
-        else if(actionType == ActionType.Hold)
-        {
-            type = "Hold";
+            foreach(string key in keyHold)
+            {
+                if(key == name)
+                {
+                    result = true;
+                }
+            }
         }
         else
         {
-            type = "Release";
+            foreach(string key in keyRelease)
+            {
+                if(key == name)
+                {
+                    result = true;
+                }
+            }
         }
 
-        return type;
-    }
-
-    protected internal string _Target()
-    {
-        string type = "";
-
-        if(target == Target.Player)
-        {
-            type = "Player";
-        }
-        else 
-        {
-            type = "Setting";
-        }
-
-        return type;
-    }
-}
-
-[System.Serializable]
-public class ConstantAction : Action
-{
-    const Prior prior = Prior.Constant;
-    [SerializeField] private ActionType actionType;
-    [SerializeField] private Target target;
-
-    protected internal string _ActionType()
-    {
-        string type = "";
-
-        if(actionType == ActionType.Press)
-        {
-            type = "Press";
-        }
-        else if(actionType == ActionType.Hold)
-        {
-            type = "Hold";
-        }
-        else
-        {
-            type = "Release";
-        }
-
-        return type;
-    }
-
-    protected internal string _Target()
-    {
-        string type = "";
-
-        if(target == Target.Player)
-        {
-            type = "Player";
-        }
-        else 
-        {
-            type = "Setting";
-        }
-
-        return type;
-    }
-}
-
-[System.Serializable]
-public class Action
-{
-    [SerializeField] private string acitonName;
-    [SerializeField] private string keyName;
-    protected internal enum Prior {Constant, Primary};
-    protected internal enum ActionType {Press, Hold, Release};
-    protected internal enum Target {Player, Setting};
-
-    protected internal string KeyName()
-    {
-        return keyName;
-    }
-
-    protected internal string ActionName()
-    {
-        return acitonName;
+        return result;
     }
 }
 

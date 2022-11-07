@@ -8,50 +8,35 @@ public class CharacterControllerScript : MonoBehaviour
     [Header("Rotation Speed")]
     [SerializeField] private float horizontalSpeed = 2f;
     [SerializeField] private float verticalSpeed = 2f;
-    [SerializeField] private float maxYAxis = 180f;
-    [SerializeField] private float maxXAxis = 90f;
-
+    [SerializeField] private float[] maxYAxis;
+    [SerializeField] private float[] maxXAxis;
 
     [Header("Transform")]
     private Transform _transform;
-    [SerializeField]private Transform _cameraTransform;
+    [SerializeField] private Transform _camera;
 
     private void Start()
     {
         _transform = gameObject.GetComponent<Transform>();
     }
 
-    protected internal void HorizontalRotation(float yAxisRaw)
+    protected internal void Rotate(Vector2 axis)
     {
-        float rotation = horizontalSpeed * yAxisRaw * Time.deltaTime * 50f;
+        Vector3 rotate = new Vector3(-verticalSpeed * axis.x * Time.deltaTime * 50f, horizontalSpeed * axis.y * Time.deltaTime * 50f, 0f);
 
-        if(_transform.rotation.y + rotation > maxYAxis)
+        float finalRotationY = _transform.eulerAngles.y + rotate.y;
+        float finalRotationX = _camera.eulerAngles.x + rotate.x;
+
+        if(finalRotationX > maxXAxis[0] && finalRotationX < maxXAxis[1])
         {
-            _transform.Rotate(_transform.localRotation.x, maxYAxis, _transform.localRotation.z);
+            finalRotationX -= rotate.x;
         }
-        else if(_transform.rotation.y + rotation < -maxYAxis)
+        if(finalRotationY > maxYAxis[0] && finalRotationY < maxYAxis[1])
         {
-            _transform.Rotate(_transform.localRotation.x, -maxXAxis, _transform.localRotation.z);
+            finalRotationY -= rotate.y;
         }
-        else
-        {
-            _transform.Rotate(_transform.localRotation.x, rotation + _transform.localRotation.y, _transform.localRotation.z);
-        }
+
+        _transform.eulerAngles = new Vector3( _transform.eulerAngles.x, finalRotationY, 0f);
+        _camera.eulerAngles = new Vector3(finalRotationX, _camera.eulerAngles.y, 0f);
     }
-
-    protected internal void VerticalRotation(float xAxisRaw)
-    {
-        float rotation = -verticalSpeed * xAxisRaw * Time.deltaTime * 50f;
-
-        if(_cameraTransform.eulerAngles.x + rotation > 85f && _cameraTransform.eulerAngles.x + rotation < 275f)
-        {
-            _cameraTransform.eulerAngles = new Vector3(_cameraTransform.eulerAngles.x, _cameraTransform.eulerAngles.y, 0);
-        }
-        else
-        {
-            _cameraTransform.eulerAngles = new Vector3(rotation + _cameraTransform.eulerAngles.x, _cameraTransform.eulerAngles.y, 0);
-        }
-    }
-
-
 }
