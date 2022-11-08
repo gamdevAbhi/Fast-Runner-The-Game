@@ -13,33 +13,35 @@ public class CharacterGroundScript : MonoBehaviour
     [SerializeField] private LayerMask[] layerName;
     [SerializeField] private bool isGround;
 
-    private float delayTime;
+    private float delayTimeFall;
+    private float delayTimeJump;
     private bool canJump;
 
     private void Awake()
     {
-        delayTime = delayOffset;
+        delayTimeFall = delayOffset;
     }
 
     private void FixedUpdate()
     {
         isGround = CheckGround();
 
-        if(isGround == true)
+        if(isGround == true && delayTimeJump == 0f)
         {
             canJump = true;
+            delayTimeFall = delayOffset;
         }
-    }
-
-    private void Update()
-    {
-        if(isGround == false)
+        else if(isGround == true && delayTimeJump > 0f)
         {
-            delayTime = (delayTime - Time.deltaTime > 0f)? delayTime - Time.deltaTime : 0f;
+            GetComponent<CharacterMovementScript>().Jump();
+            delayTimeJump = 0f;
         }
         else
         {
-            delayTime = delayOffset;
+            delayTimeFall = (delayTimeFall - Time.fixedDeltaTime > 0f)? delayTimeFall - Time.fixedDeltaTime : 0f;
+            canJump = false;
+
+            delayTimeJump = (delayTimeJump - Time.fixedDeltaTime > 0f)? delayTimeJump - Time.fixedDeltaTime : 0f;
         }
     }
 
@@ -53,15 +55,14 @@ public class CharacterGroundScript : MonoBehaviour
         }
         else
         {
-            if(delayTime > 0f && canJump == true)
+            if(delayTimeFall > 0f && canJump == true)
             {
                 result = true;
             }
-        }
-
-        if(result == true)
-        {
-            canJump = false;
+            else if(canJump == false)
+            {
+                delayTimeJump = delayOffset;
+            }
         }
 
         return result;
@@ -82,6 +83,11 @@ public class CharacterGroundScript : MonoBehaviour
         }
 
         return isHit;
+    }
+
+    protected internal bool GetGroundCheck()
+    {
+        return isGround;
     }
 
 }

@@ -50,6 +50,6 @@ public class ConsoleActionScript : MonoBehaviour
 
         Vector3 vector = new Vector3(float.Parse(coordToAxis[0]), float.Parse(coordToAxis[1]), float.Parse(coordToAxis[2]));
 
-        playerTransform.position = vector;
+        playerTransform.localPosition += vector;
     }
 }

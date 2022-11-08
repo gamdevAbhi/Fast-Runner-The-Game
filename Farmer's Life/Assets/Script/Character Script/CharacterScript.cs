@@ -15,6 +15,7 @@ public class CharacterScript : MonoBehaviour
 
     [Header("Script")]
     [SerializeField] private KeyMapManagerScript keyMapManagerScript;
+    [SerializeField] private CameraShakeScript cameraShakeScript;
 
     private void Awake()
     {
@@ -39,9 +40,23 @@ public class CharacterScript : MonoBehaviour
             MoveCharacter(command);
         }
 
+        if(value.Count == 0)
+        {
+            MoveCharacter("Stand");
+        }
+
         value = keyMapManagerScript.GetAction("MouseMove");
 
         RotateLook(value);
+
+        if(CharacterGroundScript.GetGroundCheck() == true)
+        {
+            cameraShakeScript.ChangeStatus(characterMovementScript.CurrentState());
+        }
+        else
+        {
+            cameraShakeScript.ChangeStatus("Stand");
+        }
     }
 
     private void FixedUpdate()
@@ -80,7 +95,7 @@ public class CharacterScript : MonoBehaviour
         {
             characterMovementScript.Sprint(false);
         }
-        else if(command == "")
+        else if(command == "Stand")
         {
             characterMovementScript.MoveNone();
         }

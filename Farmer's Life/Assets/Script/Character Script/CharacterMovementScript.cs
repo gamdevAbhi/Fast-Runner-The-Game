@@ -18,8 +18,8 @@ public class CharacterMovementScript : MonoBehaviour
     private Rigidbody  _rigidbody;
     private bool isSprint = false;
     private float initialSpeed = 0.5f;
-    private enum PreviousCommand {Forward, Left, Right, Backward, None};
-    private PreviousCommand command = PreviousCommand.None;
+    private enum PreviousCommand {Forward, Left, Right, Backward, Stand};
+    private PreviousCommand command = PreviousCommand.Stand;
 
     private Transform _transform;
 
@@ -103,17 +103,17 @@ public class CharacterMovementScript : MonoBehaviour
 
     protected internal void Jump()
     {
-        _rigidbody.AddForce(_transform.TransformDirection(Vector3.up) * jumpForce, ForceMode.Impulse);
+        _rigidbody.velocity = _transform.TransformDirection(Vector3.up) * jumpForce;
     }
 
     protected internal void MoveNone()
     {
-        command = PreviousCommand.None;
+        command = PreviousCommand.Stand;
     }
 
     private void CheckInitialSpeed(PreviousCommand currentCommand)
     {
-        if(command == PreviousCommand.None || command != currentCommand)
+        if(command == PreviousCommand.Stand || command != currentCommand)
         {
             initialSpeed = 0.5f;
         }
@@ -139,5 +139,28 @@ public class CharacterMovementScript : MonoBehaviour
     protected internal void ChangeJumpSpeed(float value)
     {
         jumpForce = value;
+    }
+
+    protected internal string CurrentState()
+    {
+        string state = "";
+
+        if(command == PreviousCommand.Stand)
+        {
+            state = "Stand";
+        }
+        else
+        {
+            if(isSprint == true)
+            {
+                state = "Run";
+            }
+            else
+            {
+                state = "Walk";
+            }
+        }
+
+        return state;
     }
 }
