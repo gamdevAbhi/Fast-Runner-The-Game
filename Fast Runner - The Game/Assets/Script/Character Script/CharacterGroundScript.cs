@@ -5,7 +5,7 @@ using UnityEngine;
 public class CharacterGroundScript : MonoBehaviour
 {
     [Header("Transform")]
-    [SerializeField] private Transform raycastOriginTransform;
+    [SerializeField] private Transform[] raycastGroundTransform;
 
     [Header("Parameters")]
     [SerializeField] private float delayOffset;
@@ -71,17 +71,24 @@ public class CharacterGroundScript : MonoBehaviour
     private bool CheckGround()
     {
         bool isHit = false;
-
-        foreach(LayerMask layer in layerName)
+        foreach(Transform _transform in raycastGroundTransform)
         {
-            isHit = Physics.Raycast(raycastOriginTransform.position, raycastOriginTransform.TransformDirection(Vector3.down), maxDistance, layer);
+            foreach(LayerMask layer in layerName)
+            {
+                isHit = Physics.Raycast(_transform.position, _transform.TransformDirection(Vector3.down), maxDistance, layer);
+
+                if(isHit == true)
+                {
+                    break;
+                }
+            }
 
             if(isHit == true)
             {
                 break;
             }
         }
-
+        
         return isHit;
     }
 
@@ -89,5 +96,4 @@ public class CharacterGroundScript : MonoBehaviour
     {
         return isGround;
     }
-
 }

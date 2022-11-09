@@ -10,14 +10,23 @@ public class CharacterMovementScript : MonoBehaviour
     [SerializeField] private float sideMovement = 1.6f;
     [SerializeField] private float backwardMovement = 1.3f;
     [SerializeField] private float offsetSpeed = 0.2f;
+    [SerializeField] private float speedMax = 1.25f;
+
+    [Header("Other")]
     [SerializeField] private float sprint = 2f;
+    [SerializeField] private float dash = 3.5f;
+    [SerializeField] private int totalDashTime = 1;
 
     [Header("Jump")]
     [SerializeField] private float jumpForce = 2f;
 
+    [Header("Camera")]
+    [SerializeField] private Transform _camera;
+
     private Rigidbody  _rigidbody;
     private bool isSprint = false;
     private float initialSpeed = 0.5f;
+    private int maximumDash = 0;
     private enum PreviousCommand {Forward, Left, Right, Backward, Stand};
     private PreviousCommand command = PreviousCommand.Stand;
 
@@ -27,6 +36,7 @@ public class CharacterMovementScript : MonoBehaviour
     {
         _transform = gameObject.GetComponent<Transform>();
         _rigidbody = GetComponent<Rigidbody>();
+        maximumDash = totalDashTime;
     }
 
     protected internal void MoveForward()
@@ -42,7 +52,7 @@ public class CharacterMovementScript : MonoBehaviour
 
         _transform.position += movePos;
         
-        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed);
+        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > speedMax)? speedMax : initialSpeed + (initialSpeed * offsetSpeed);
 
         command = PreviousCommand.Forward;
     }
@@ -106,6 +116,15 @@ public class CharacterMovementScript : MonoBehaviour
         _rigidbody.velocity = _transform.TransformDirection(Vector3.up) * jumpForce;
     }
 
+    protected internal void Dash()
+    {
+        if(totalDashTime > 0)
+        {
+            _rigidbody.velocity = _camera.forward * dash * 10f;
+            totalDashTime --;
+        }
+    }
+
     protected internal void MoveNone()
     {
         command = PreviousCommand.Stand;
@@ -162,5 +181,25 @@ public class CharacterMovementScript : MonoBehaviour
         }
 
         return state;
+    }
+
+    protected internal void ChangeMaxSpeed(float value)
+    {
+        speedMax = value;
+    }
+
+    protected internal void ResetDash()
+    {
+        totalDashTime = maximumDash;
+    }
+
+    protected internal void ChangeMaxDash(int value)
+    {
+        maximumDash = value;
+    }
+
+    protected internal void ChangeDashSpeed(float value)
+    {
+        dash = value;
     }
 }

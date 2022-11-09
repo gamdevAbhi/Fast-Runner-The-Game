@@ -6,8 +6,7 @@ using UnityEngine;
 public class KeyMapManagerScript : MonoBehaviour
 {
     [Header("KeyMaps")]
-    [SerializeField] private List<KeyMap> characterNonFixedMap;
-    [SerializeField] private List<KeyMap> characterFixedMap;
+    [SerializeField] private List<KeyMap> characterMap;
     [SerializeField] private List<KeyMap> consoleMap;
     [SerializeField] private InputManagerScript inputManagerScript;
 
@@ -15,13 +14,9 @@ public class KeyMapManagerScript : MonoBehaviour
     {
         List<string> value = new List<string>();
 
-        if(command == "CharacterNonFixedMap")
+        if(command == "CharacterdMap")
         {
-            value = CheckInput(characterNonFixedMap);
-        }
-        else if(command == "CharacterFixedMap")
-        {
-            value = CheckInput(characterFixedMap);
+            value = CheckInput(characterMap);
         }
         else if(command == "MouseMove")
         {

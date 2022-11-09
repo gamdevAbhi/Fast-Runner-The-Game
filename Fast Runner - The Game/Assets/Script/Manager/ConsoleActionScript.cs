@@ -10,6 +10,7 @@ public class ConsoleActionScript : MonoBehaviour
 
     [Header("Script")]
     [SerializeField] private CharacterScript characterScript;
+    [SerializeField] private CameraShakeScript cameraShakeScript;
 
     private void Awake()
     {
@@ -51,5 +52,37 @@ public class ConsoleActionScript : MonoBehaviour
         Vector3 vector = new Vector3(float.Parse(coordToAxis[0]), float.Parse(coordToAxis[1]), float.Parse(coordToAxis[2]));
 
         playerTransform.localPosition += vector;
+    }
+
+    protected internal void ChangeDrag(string value)
+    {
+        playerTransform.GetComponent<Rigidbody>().drag = float.Parse(value) / 10f;
+    }
+
+    protected internal void ChangeMaxSpeed(string value)
+    {
+        characterScript.SendMessage("ChangeMaxSpeed", float.Parse(value));
+    }
+
+    protected internal void ChangeDashSpeed(string value)
+    {
+        characterScript.SendMessage("ChangeDashSpeed", float.Parse(value));
+    }
+
+    protected internal void ChangeMaxDash(string value)
+    {
+        characterScript.SendMessage("ChangeMaxDash", int.Parse(value));
+    }
+
+    protected internal void CameraShake(string value)
+    {
+        if(value == "ON")
+        {
+            cameraShakeScript.ChangeCameraShake(true);
+        }
+        else if(value == "OFF")
+        {
+            cameraShakeScript.ChangeCameraShake(false);
+        }
     }
 }

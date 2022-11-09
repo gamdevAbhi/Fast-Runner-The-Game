@@ -6,12 +6,12 @@ public class InputManagerScript : MonoBehaviour
 {
     [Header("Keyboard Input")]
     [SerializeField] private List<Key> keys;
-    [SerializeField] private List<string> keyPressed;
-    [SerializeField] private List<string> keyHold;
-    [SerializeField] private List<string> keyRelease;
+    private List<string> keyPressed;
+    private List<string> keyHold;
+    private List<string> keyRelease;
 
     [Header("Mouse Input")]
-    [SerializeField] private Vector2 mouseMove;
+    private Vector2 mouseMove;
 
     private void Update()
     {

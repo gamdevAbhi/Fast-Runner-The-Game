@@ -11,7 +11,7 @@ public class CharacterScript : MonoBehaviour
 {
     private CharacterMovementScript characterMovementScript;
     private CharacterControllerScript characterControllerScript;
-    private CharacterGroundScript CharacterGroundScript;
+    private CharacterGroundScript characterGroundScript;
 
     [Header("Script")]
     [SerializeField] private KeyMapManagerScript keyMapManagerScript;
@@ -21,7 +21,7 @@ public class CharacterScript : MonoBehaviour
     {
         characterMovementScript = GetComponent<CharacterMovementScript>();
         characterControllerScript = GetComponent<CharacterControllerScript>();
-        CharacterGroundScript = GetComponent<CharacterGroundScript>();
+        characterGroundScript = GetComponent<CharacterGroundScript>();
     }
 
     private void Start()
@@ -33,83 +33,72 @@ public class CharacterScript : MonoBehaviour
 
     private void Update()
     {
-        List<string> value = keyMapManagerScript.GetAction("CharacterNonFixedMap");
+        List<string> value = keyMapManagerScript.GetAction("CharacterdMap");
         
-        foreach(string command in value)
-        {
-            MoveCharacter(command);
-        }
+        MoveCharacter(value);
 
         if(value.Count == 0)
         {
-            MoveCharacter("Stand");
+            value.Add("Stand");
+            MoveCharacter(value);
         }
 
         value = keyMapManagerScript.GetAction("MouseMove");
 
         RotateLook(value);
 
-        if(CharacterGroundScript.GetGroundCheck() == true)
+        if(characterGroundScript.GetGroundCheck() == true)
         {
             cameraShakeScript.ChangeStatus(characterMovementScript.CurrentState());
+            characterMovementScript.ResetDash();
         }
         else
         {
-            cameraShakeScript.ChangeStatus("Stand");
+            cameraShakeScript.ChangeStatus("Jump");
         }
     }
 
-    private void FixedUpdate()
+    private void MoveCharacter(List<string> value)
     {
-        List<string> value = keyMapManagerScript.GetAction("CharacterFixedMap");
-        
+        bool isSprint = false;
+
         foreach(string command in value)
         {
-            MoveCharacterFixed(command);
-        }
-    }
-
-    private void MoveCharacter(string command)
-    {
-        if(command == "Forward")
-        {
-            characterMovementScript.MoveForward();
-        }
-        else if(command == "Backward")
-        {
-            characterMovementScript.MoveBackward();
-        }
-        else if(command == "Left")
-        {
-            characterMovementScript.MoveLeft();
-        }
-        else if(command == "Right")
-        {
-            characterMovementScript.MoveRight();
-        }
-        else if(command == "Sprint On")
-        {
-            characterMovementScript.Sprint(true);
-        }
-        else if(command == "Sprint Off")
-        {
-            characterMovementScript.Sprint(false);
-        }
-        else if(command == "Stand")
-        {
-            characterMovementScript.MoveNone();
-        }
-    }
-
-    private void MoveCharacterFixed(string command)
-    {
-        if(command == "Jump")
-        {
-            if(CharacterGroundScript.CanJump() == true)
+            if(command == "Forward")
+            {
+                characterMovementScript.MoveForward();
+            }
+            else if(command == "Backward")
+            {
+                characterMovementScript.MoveBackward();
+            }
+            else if(command == "Left")
+            {
+                characterMovementScript.MoveLeft();
+            }
+            else if(command == "Right")
+            {
+                characterMovementScript.MoveRight();
+            }
+            else if(command == "Jump" && characterGroundScript.CanJump() == true)
             {
                 characterMovementScript.Jump();
             }
+            else if(command == "Sprint" && characterGroundScript.GetGroundCheck())
+            {
+                isSprint = true;
+            }
+            else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false)
+            {
+                characterMovementScript.Dash();
+            }
+            else if(command == "Stand")
+            {
+                characterMovementScript.MoveNone();
+            }
         }
+
+        characterMovementScript.Sprint(isSprint);
     }
 
     private void RotateLook(List<string> mouseMove)
@@ -131,5 +120,20 @@ public class CharacterScript : MonoBehaviour
     private void ChangeJump(float value)
     {
         characterMovementScript.ChangeJumpSpeed(value);
+    }
+
+    private void ChangeMaxSpeed(float value)
+    {
+        characterMovementScript.ChangeMaxSpeed(value);
+    }
+
+    private void ChangeDashSpeed(float value)
+    {
+        characterMovementScript.ChangeDashSpeed(value);
+    }
+
+    private void ChangeMaxDash(int value)
+    {
+        characterMovementScript.ChangeMaxDash(value);
     }
 }

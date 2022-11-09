@@ -118,21 +118,41 @@ public class ConsoleScript : MonoBehaviour
         {
             consoleActionScript.ResetPos();
         }
-        else if(word[0] == "CHANGELOCATION")
+        else if(word[0] == "MOVEPOS")
         {
             consoleActionScript.ChangeLocation(word[1]);
         }
-        else if(word[0] == "CHANGEMOVESPEED")
+        else if(word[0] == "MOVESPEED")
         {
             consoleActionScript.ChangeMovementSpeed(word[1]);
         }
-        else if(word[0] == "CHANGEJUMPFORCE")
+        else if(word[0] == "JUMPFORCE")
         {
             consoleActionScript.ChangeJumpSpeed(word[1]);
         }
-        else if(word[0] == "CHANGESPRINTSPEED")
+        else if(word[0] == "SPRINTSPEED")
         {
             consoleActionScript.ChangeSprintSpeed(word[1]);
+        }
+        else if(word[0] == "DRAG")
+        {
+            consoleActionScript.ChangeDrag(word[1]);
+        }
+        else if(word[0] == "MAXSPEED")
+        {
+            consoleActionScript.ChangeMaxSpeed(word[1]);
+        }
+        else if(word[0] == "DASHSPEED")
+        {
+            consoleActionScript.ChangeDashSpeed(word[1]);
+        }
+        else if(word[0] == "MAXDASH")
+        {
+            consoleActionScript.ChangeMaxDash(word[1]);
+        }
+        else if(word[0] == "CAMERASHAKE")
+        {
+            consoleActionScript.CameraShake(word[1]);
         }
         else
         {
