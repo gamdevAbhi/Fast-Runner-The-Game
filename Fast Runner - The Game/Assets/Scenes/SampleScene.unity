@@ -1860,9 +1860,11 @@ MonoBehaviour:
   walkShakeSpeed: 0.08
   runShakeSpeed: 0.16
   fallShakeSpeed: 0.6
-  limitStable: 5
-  ShakeImpact: 2
-  maxShakeImpactTime: 5
+  dashShakeSpeed: 0.4
+  limitStableY: 8
+  limitStableZ: 10
+  ShakeImpact: 1
+  maxShakeImpactTime: 3.5
   shouldShake: 1
   shakeType: 0
   currentDirection: 0
@@ -2464,7 +2466,7 @@ MonoBehaviour:
   forwardMovement: 3.5
   sideMovement: 2
   backwardMovement: 2.25
-  offsetSpeed: 0.1
+  offsetSpeed: 1.5
   speedMax: 1.25
   sprint: 2.5
   dash: 2

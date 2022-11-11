@@ -54,7 +54,7 @@ public class CharacterScript : MonoBehaviour
         }
         else
         {
-            cameraShakeScript.ChangeStatus("Jump");
+            cameraShakeScript.ChangeStatus("Fall");
         }
     }
 
@@ -135,5 +135,10 @@ public class CharacterScript : MonoBehaviour
     private void ChangeMaxDash(int value)
     {
         characterMovementScript.ChangeMaxDash(value);
+    }
+
+    private void ChangeOffsetSpeed(float value)
+    {
+        characterMovementScript.ChangeOffsetSpeed(value);
     }
 }

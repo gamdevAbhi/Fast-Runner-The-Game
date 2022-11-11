@@ -146,6 +146,10 @@ public class ConsoleScript : MonoBehaviour
         {
             consoleActionScript.ChangeDashSpeed(word[1]);
         }
+        else if(word[0] == "OFFSETSPEED")
+        {
+            consoleActionScript.ChangeOffsetSpeed(word[1]);
+        }
         else if(word[0] == "MAXDASH")
         {
             consoleActionScript.ChangeMaxDash(word[1]);

@@ -85,4 +85,9 @@ public class ConsoleActionScript : MonoBehaviour
             cameraShakeScript.ChangeCameraShake(false);
         }
     }
+
+    protected internal void ChangeOffsetSpeed(string value)
+    {
+        characterScript.SendMessage("ChangeOffsetSpeed", float.Parse(value));
+    }
 }

@@ -5,8 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Transform))]
 public class CharacterMovementScript : MonoBehaviour
 {
-    [Header("Movement Speed")]
-    [SerializeField] private float forwardMovement = 2;
+    [field:Header("Movement Speed")]
+    [field:SerializeField] private float forwardMovement = 2;
     [SerializeField] private float sideMovement = 1.6f;
     [SerializeField] private float backwardMovement = 1.3f;
     [SerializeField] private float offsetSpeed = 0.2f;
@@ -52,7 +52,7 @@ public class CharacterMovementScript : MonoBehaviour
 
         _transform.position += movePos;
         
-        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > speedMax)? speedMax : initialSpeed + (initialSpeed * offsetSpeed);
+        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > speedMax)? speedMax : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
 
         command = PreviousCommand.Forward;
     }
@@ -70,7 +70,7 @@ public class CharacterMovementScript : MonoBehaviour
 
         _transform.position += movePos;
         
-        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed);
+        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
 
         command = PreviousCommand.Backward;
     }
@@ -88,7 +88,7 @@ public class CharacterMovementScript : MonoBehaviour
 
         _transform.position += movePos;
         
-        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed);
+        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
 
         command = PreviousCommand.Left;
     }
@@ -106,14 +106,21 @@ public class CharacterMovementScript : MonoBehaviour
 
         _transform.position += movePos;
         
-        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed);
+        initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
 
         command = PreviousCommand.Right;
     }
 
     protected internal void Jump()
     {
-        _rigidbody.velocity = _transform.TransformDirection(Vector3.up) * jumpForce;
+        if(command == PreviousCommand.Forward && isSprint == true)
+        {
+            _rigidbody.velocity = _transform.up * jumpForce * 1.25f + _transform.forward * initialSpeed * sprint * forwardMovement;
+        }
+        else
+        {
+            _rigidbody.velocity = Vector3.up * jumpForce;
+        }
     }
 
     protected internal void Dash()
@@ -201,5 +208,10 @@ public class CharacterMovementScript : MonoBehaviour
     protected internal void ChangeDashSpeed(float value)
     {
         dash = value;
+    }
+
+    protected internal void ChangeOffsetSpeed(float value)
+    {
+        offsetSpeed = value;
     }
 }

@@ -10,15 +10,17 @@ public class CameraShakeScript : MonoBehaviour
     [SerializeField] private float runShakeMax = 1.5f;
     private float currentY;
     private float shakeImpactTime = 0f;
-    private enum ShakeType {Stand, Walk, Run, Jump};
+    private enum ShakeType {Stand, Walk, Run, Fall};
 
     [Header("Speed")]
     [SerializeField] private float walkShakeSpeed = 0.08f;
     [SerializeField] private float runShakeSpeed = 0.15f;
     [SerializeField] private float fallShakeSpeed = 0.08f;
+    [SerializeField] private float dashShakeSpeed = 0.4f;
 
     [Header("Falling Shake")]
-    [SerializeField] private float limitStable = 5f;
+    [SerializeField] private float limitStableY = 5f;
+    [SerializeField] private float limitStableZ = 5f;
     [SerializeField] private float ShakeImpact = 2f;
     [SerializeField] private float maxShakeImpactTime = 5f;
 
@@ -65,14 +67,29 @@ public class CameraShakeScript : MonoBehaviour
             Shake(runShakeSpeed, runShakeMax);
             _transform.position = new Vector3(cameraHolder.position.x, _transform.position.y, _transform.position.z);
         }
-        else if(shakeType == ShakeType.Jump)
+        else if(shakeType == ShakeType.Fall)
         {
-            if(playerRigid.velocity.y < -limitStable || playerRigid.velocity.y > limitStable)
+            if(playerRigid.velocity.y < -limitStableY)
             {
-                shakeImpactTime = (shakeImpactTime + Time.deltaTime > maxShakeImpactTime)? maxShakeImpactTime : shakeImpactTime + Time.deltaTime;
-                float currentShakeImpact = shakeImpactTime / maxShakeImpactTime * ShakeImpact;
+                shakeImpactTime = (shakeImpactTime + Time.deltaTime >= maxShakeImpactTime)? maxShakeImpactTime : shakeImpactTime + Time.deltaTime;
+                float currentShakeImpact = (0.2f + (shakeImpactTime / maxShakeImpactTime) * 1.5f) * ShakeImpact;
 
-                FallShake(fallShakeSpeed * Mathf.Abs(playerRigid.velocity.y), currentShakeImpact);
+                float currentShakeSpeed = fallShakeSpeed * Mathf.Abs(playerRigid.velocity.y) / 10f;
+
+                currentShakeSpeed = (currentShakeSpeed > fallShakeSpeed * 3.5f)? fallShakeSpeed * 3.5f: currentShakeSpeed;
+
+                FallShake(currentShakeSpeed, currentShakeImpact);
+            }
+            else if(playerRigid.transform.InverseTransformDirection(playerRigid.velocity).z > limitStableZ)
+            {
+                shakeImpactTime = (shakeImpactTime + Time.deltaTime >= maxShakeImpactTime)? maxShakeImpactTime : shakeImpactTime + Time.deltaTime;
+                float currentShakeImpact = (0.4f + (shakeImpactTime / maxShakeImpactTime) * 0.6f) * ShakeImpact;
+
+                float currentShakeSpeed = dashShakeSpeed * Mathf.Abs(playerRigid.transform.InverseTransformDirection(playerRigid.velocity).z) / 10f;
+
+                currentShakeSpeed = (currentShakeSpeed > dashShakeSpeed * 2f)? dashShakeSpeed * 2f: currentShakeSpeed;
+
+                FallShake(currentShakeSpeed, currentShakeImpact);
             }
             else
             {
@@ -84,7 +101,7 @@ public class CameraShakeScript : MonoBehaviour
             _transform.position = new Vector3(cameraHolder.position.x, cameraHolder.position.y, _transform.position.z);
         }
 
-        if(shakeType != ShakeType.Jump)
+        if(shakeType != ShakeType.Fall)
         {
             shakeImpactTime = 0f;
         }
@@ -98,11 +115,11 @@ public class CameraShakeScript : MonoBehaviour
 
         if(currentDirection == Direction.Up)
         {
-            move = (_transform.position.y + Time.deltaTime * speed > finalMaxUp)? finalMaxUp : _transform.position.y + Time.deltaTime * speed * 10f;
+            move = (_transform.position.y + Time.deltaTime * speed >= finalMaxUp)? finalMaxUp : _transform.position.y + Time.deltaTime * speed * 10f;
         }
         else if(currentDirection == Direction.Down)
         {
-            move = (_transform.position.y - Time.deltaTime * speed < finalMaxDown)? finalMaxDown : _transform.position.y - Time.deltaTime * speed * 10f;
+            move = (_transform.position.y - Time.deltaTime * speed <= finalMaxDown)? finalMaxDown : _transform.position.y - Time.deltaTime * speed * 10f;
         }
 
         if(move == finalMaxUp)
@@ -125,11 +142,11 @@ public class CameraShakeScript : MonoBehaviour
 
         if(fallDirection == FallDirection.Right)
         {
-            move = (_transform.localPosition.x + Time.deltaTime * speed * 10f > finalMaxRight)? finalMaxRight : _transform.localPosition.x + Time.deltaTime * speed * 10f;
+            move = (_transform.localPosition.x + Time.deltaTime * speed * 10f >= finalMaxRight)? finalMaxRight : _transform.localPosition.x + Time.deltaTime * speed * 10f;
         }
         else if(fallDirection == FallDirection.Left)
         {
-            move = (_transform.localPosition.x - Time.deltaTime * speed * 10f < finalMaxLeft)? finalMaxLeft : _transform.localPosition.x - Time.deltaTime * speed * 10f;
+            move = (_transform.localPosition.x - Time.deltaTime * speed * 10f <= finalMaxLeft)? finalMaxLeft : _transform.localPosition.x - Time.deltaTime * speed * 10f;
         }
 
         if(move == finalMaxRight)
@@ -158,9 +175,9 @@ public class CameraShakeScript : MonoBehaviour
         {
             shakeType = ShakeType.Stand;
         }
-        else if(status == "Jump")
+        else if(status == "Fall")
         {
-            shakeType = ShakeType.Jump;
+            shakeType = ShakeType.Fall;
         }
     }
 
