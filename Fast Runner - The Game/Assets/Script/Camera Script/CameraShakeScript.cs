@@ -8,25 +8,29 @@ public class CameraShakeScript : MonoBehaviour
     [SerializeField] private float maxYAxis = 1f;
     [SerializeField] private float maxXAxis = 1f;
     [SerializeField] private float runShakeMax = 1.5f;
+    [SerializeField] private float maxImpactVer = 2.5f;
     private float currentY;
+    private float impactVelocity;
     private float shakeImpactTime = 0f;
-    private enum ShakeType {Stand, Walk, Run, Fall};
 
     [Header("Speed")]
     [SerializeField] private float walkShakeSpeed = 0.08f;
     [SerializeField] private float runShakeSpeed = 0.15f;
     [SerializeField] private float fallShakeSpeed = 0.08f;
     [SerializeField] private float dashShakeSpeed = 0.4f;
+    [SerializeField] private float fallImpactSpeed = 0.08f;
 
     [Header("Falling Shake")]
     [SerializeField] private float limitStableY = 5f;
     [SerializeField] private float limitStableZ = 5f;
     [SerializeField] private float ShakeImpact = 2f;
     [SerializeField] private float maxShakeImpactTime = 5f;
+    [SerializeField] private float impactVer = 2f;
 
     private Transform _transform;
     private enum Direction {Up, Down};
     private enum FallDirection {Right, Left};
+    private enum ShakeType {Stand, Walk, Run, Fall, Impact};
 
     [Header("Current Status")]
     [SerializeField] private bool shouldShake = true;
@@ -96,6 +100,10 @@ public class CameraShakeScript : MonoBehaviour
                 shakeImpactTime = 0f;
             }
         }
+        else if(shakeType == ShakeType.Impact)
+        {
+           ImpactShake(fallImpactSpeed, ((impactVelocity * impactVer) / 10f > maxImpactVer)? maxImpactVer : (impactVelocity * impactVer) / 10f);
+        }
         else if(shakeType == ShakeType.Stand)
         {
             _transform.position = new Vector3(cameraHolder.position.x, cameraHolder.position.y, _transform.position.z);
@@ -134,6 +142,35 @@ public class CameraShakeScript : MonoBehaviour
         _transform.position = new Vector3(_transform.position.x, move, _transform.position.z);
     }
 
+    private void ImpactShake(float speed, float shake)
+    {
+        float move = 0f;
+        float finalMaxDown =  currentY - maxYAxis * shake;
+
+        _transform.position = new Vector3(cameraHolder.position.x, _transform.position.y, _transform.position.z);
+
+        if(currentDirection == Direction.Up)
+        {
+            move = (_transform.position.y + Time.deltaTime * speed >= currentY)? currentY : _transform.position.y + Time.deltaTime * speed * 10f;
+        }
+        else if(currentDirection == Direction.Down)
+        {
+            move = (_transform.position.y - Time.deltaTime * speed <= finalMaxDown)? finalMaxDown : _transform.position.y - Time.deltaTime * speed * 10f;
+        }
+
+        if(move == currentY)
+        {
+            currentDirection = Direction.Down;
+            shakeType = ShakeType.Stand;
+        }
+        else if(move == finalMaxDown)
+        {
+            currentDirection = Direction.Up;
+        }
+
+        _transform.position = new Vector3(_transform.position.x, move, _transform.position.z);
+    }
+
     private void FallShake(float speed, float currentShakeImpact)
     {
         float move = 0f;
@@ -163,22 +200,38 @@ public class CameraShakeScript : MonoBehaviour
 
     protected internal void ChangeStatus(string status)
     {
-        if(status == "Walk")
+        if(status == "Walk" && shakeType != ShakeType.Impact)
         {
             shakeType = ShakeType.Walk;
         }
-        else if(status == "Run")
+        else if(status == "Run"  && shakeType != ShakeType.Impact)
         {
             shakeType = ShakeType.Run;
         }
-        else if(status == "Stand")
+        else if(status == "Stand"  && shakeType != ShakeType.Impact)
         {
             shakeType = ShakeType.Stand;
         }
-        else if(status == "Fall")
+        else if(status == "Fall"  && shakeType != ShakeType.Impact)
         {
             shakeType = ShakeType.Fall;
         }
+        else if(status == "Impact")
+        {
+            shakeType = ShakeType.Impact;
+            currentDirection = Direction.Down;
+        }
+    }
+
+    protected internal bool IsImpacted()
+    {
+        bool result = (shakeType == ShakeType.Impact)? true : false;
+        return result;
+    }
+
+    protected internal void SetImpactVelocity(float value)
+    {
+        impactVelocity = value;
     }
 
     protected internal void ChangeCameraShake(bool status)

@@ -154,6 +154,37 @@ Transform:
   m_Father: {fileID: 611168178}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &145271920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 145271921}
+  m_Layer: 0
+  m_Name: Pivot Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &145271921
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145271920}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1321334980}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &208335090
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,6 +524,10 @@ MonoBehaviour:
     keyName: F
     mapType: 1
     actionType: 0
+  - actionName: Crouch
+    keyName: L Control
+    mapType: 1
+    actionType: 1
   consoleMap:
   - actionName: Enter
     keyName: Enter
@@ -1857,14 +1892,17 @@ MonoBehaviour:
   maxYAxis: 0.1
   maxXAxis: 0.1
   runShakeMax: 1
+  maxImpactVer: 15
   walkShakeSpeed: 0.08
   runShakeSpeed: 0.16
   fallShakeSpeed: 0.6
   dashShakeSpeed: 0.4
+  fallImpactSpeed: 0.5
   limitStableY: 8
   limitStableZ: 10
   ShakeImpact: 1
   maxShakeImpactTime: 3.5
+  impactVer: 4
   shouldShake: 1
   shakeType: 0
   currentDirection: 0
@@ -2347,6 +2385,8 @@ GameObject:
   - component: {fileID: 1321334984}
   - component: {fileID: 1321334986}
   - component: {fileID: 1321334983}
+  - component: {fileID: 1321334988}
+  - component: {fileID: 1321334989}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -2418,6 +2458,7 @@ Transform:
   m_Children:
   - {fileID: 1290517984}
   - {fileID: 611168178}
+  - {fileID: 145271921}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2431,7 +2472,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 8
   m_Drag: 0.8
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -2470,9 +2511,11 @@ MonoBehaviour:
   speedMax: 1.25
   sprint: 2.5
   dash: 2
+  crouchScale: 0.6
   totalDashTime: 1
   jumpForce: 8
   _camera: {fileID: 963194228}
+  pivotTransform: {fileID: 145271921}
 --- !u!114 &1321334985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2537,6 +2580,40 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1321334988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321334976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a80d53de388aee549943cebb37a8ae9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isImpact: 0
+  limitStable: 6
+--- !u!114 &1321334989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321334976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f98222869240245811aaca3fa451de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dashPower: 2
+  reactionForce: 6
+  minDashVelocity: 3.5
+  relativeMass: 4
+  isDash: 0
+  dashAllowLayer:
+  - Box
+  _camera: {fileID: 963194228}
 --- !u!1 &1403547536
 GameObject:
   m_ObjectHideFlags: 0

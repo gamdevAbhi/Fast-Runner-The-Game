@@ -7,11 +7,15 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterMovementScript))]
 [RequireComponent(typeof(CharacterControllerScript))]
 [RequireComponent(typeof(CharacterGroundScript))]
+[RequireComponent(typeof(CharacterGroundImpactScript))]
+[RequireComponent(typeof(CharacterAttackScript))]
 public class CharacterScript : MonoBehaviour
 {
     private CharacterMovementScript characterMovementScript;
     private CharacterControllerScript characterControllerScript;
     private CharacterGroundScript characterGroundScript;
+    private CharacterGroundImpactScript characterGroundImpactScript;
+    private CharacterAttackScript characterAttackScript;
 
     [Header("Script")]
     [SerializeField] private KeyMapManagerScript keyMapManagerScript;
@@ -22,6 +26,8 @@ public class CharacterScript : MonoBehaviour
         characterMovementScript = GetComponent<CharacterMovementScript>();
         characterControllerScript = GetComponent<CharacterControllerScript>();
         characterGroundScript = GetComponent<CharacterGroundScript>();
+        characterGroundImpactScript = GetComponent<CharacterGroundImpactScript>();
+        characterAttackScript = GetComponent<CharacterAttackScript>();
     }
 
     private void Start()
@@ -47,57 +53,75 @@ public class CharacterScript : MonoBehaviour
 
         RotateLook(value);
 
-        if(characterGroundScript.GetGroundCheck() == true)
+        if(characterGroundScript.GetGroundCheck() == true && characterGroundImpactScript.IsImpact() == false)
         {
             cameraShakeScript.ChangeStatus(characterMovementScript.CurrentState());
             characterMovementScript.ResetDash();
         }
+        else if(characterGroundScript.GetGroundCheck() == true && characterGroundImpactScript.IsImpact() == true)
+        {
+            cameraShakeScript.ChangeStatus("Impact");
+            cameraShakeScript.SetImpactVelocity(characterGroundImpactScript.Impact());
+        }
         else
         {
             cameraShakeScript.ChangeStatus("Fall");
+        }
+
+        if(characterGroundScript.GetGroundCheck() == true)
+        {
+            characterAttackScript.Status(false);
         }
     }
 
     private void MoveCharacter(List<string> value)
     {
         bool isSprint = false;
+        bool isCrouch = false;
 
         foreach(string command in value)
         {
-            if(command == "Forward")
-            {
-                characterMovementScript.MoveForward();
-            }
-            else if(command == "Backward")
-            {
-                characterMovementScript.MoveBackward();
-            }
-            else if(command == "Left")
-            {
-                characterMovementScript.MoveLeft();
-            }
-            else if(command == "Right")
-            {
-                characterMovementScript.MoveRight();
-            }
-            else if(command == "Jump" && characterGroundScript.CanJump() == true)
-            {
-                characterMovementScript.Jump();
-            }
-            else if(command == "Sprint" && characterGroundScript.GetGroundCheck())
-            {
-                isSprint = true;
-            }
-            else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false)
-            {
-                characterMovementScript.Dash();
-            }
-            else if(command == "Stand")
-            {
-                characterMovementScript.MoveNone();
-            }
+            if(cameraShakeScript.IsImpacted() == false)
+                if(command == "Forward")
+                {
+                    characterMovementScript.MoveForward();
+                }
+                else if(command == "Backward")
+                {
+                    characterMovementScript.MoveBackward();
+                }
+                else if(command == "Left")
+                {
+                    characterMovementScript.MoveLeft();
+                }
+                else if(command == "Right")
+                {
+                    characterMovementScript.MoveRight();
+                }
+                else if(command == "Jump" && characterGroundScript.CanJump() == true)
+                {
+                    characterMovementScript.Jump();
+                }
+                else if(command == "Sprint" && characterGroundScript.GetGroundCheck())
+                {
+                    isSprint = true;
+                }
+                else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false && characterMovementScript.CanDash())
+                {
+                    characterMovementScript.Dash();
+                    characterAttackScript.Status(true);
+                }
+                else if(command == "Crouch")
+                {
+                    isCrouch = true;
+                }
+                else if(command == "Stand")
+                {
+                    characterMovementScript.MoveNone();
+                }
         }
 
+        characterMovementScript.Crouch(isCrouch, characterGroundScript.GetGroundCheck());
         characterMovementScript.Sprint(isSprint);
     }
 

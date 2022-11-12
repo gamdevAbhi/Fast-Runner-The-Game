@@ -15,6 +15,7 @@ public class CharacterMovementScript : MonoBehaviour
     [Header("Other")]
     [SerializeField] private float sprint = 2f;
     [SerializeField] private float dash = 3.5f;
+    [SerializeField] private float crouchScale = 0.6f;
     [SerializeField] private int totalDashTime = 1;
 
     [Header("Jump")]
@@ -22,11 +23,17 @@ public class CharacterMovementScript : MonoBehaviour
 
     [Header("Camera")]
     [SerializeField] private Transform _camera;
+    
+    [Header("Transform")]
+    [SerializeField] private Transform pivotTransform;
 
     private Rigidbody  _rigidbody;
     private bool isSprint = false;
+    private bool isCrouch = false;
     private float initialSpeed = 0.5f;
     private int maximumDash = 0;
+    private float localCrouchScale = 0f;
+    private float localStandScale = 0f;
     private enum PreviousCommand {Forward, Left, Right, Backward, Stand};
     private PreviousCommand command = PreviousCommand.Stand;
 
@@ -37,6 +44,8 @@ public class CharacterMovementScript : MonoBehaviour
         _transform = gameObject.GetComponent<Transform>();
         _rigidbody = GetComponent<Rigidbody>();
         maximumDash = totalDashTime;
+        localStandScale = _transform.localScale.y;
+        localCrouchScale = localStandScale * crouchScale;
     }
 
     protected internal void MoveForward()
@@ -45,7 +54,7 @@ public class CharacterMovementScript : MonoBehaviour
 
         Vector3 movePos = _transform.forward * forwardMovement * initialSpeed * Time.deltaTime;
 
-        if(isSprint == true)
+        if(isSprint == true && isCrouch == false)
         {
             movePos *= sprint;
         }
@@ -63,11 +72,6 @@ public class CharacterMovementScript : MonoBehaviour
 
         Vector3 movePos = -_transform.forward * backwardMovement * initialSpeed * Time.deltaTime;
 
-        if(isSprint == true)
-        {
-            movePos *= sprint;
-        }
-
         _transform.position += movePos;
         
         initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
@@ -80,11 +84,6 @@ public class CharacterMovementScript : MonoBehaviour
         CheckInitialSpeed(PreviousCommand.Left);
 
         Vector3 movePos = -_transform.right * sideMovement * initialSpeed * Time.deltaTime;
-
-        if(isSprint == true)
-        {
-            movePos *= sprint;
-        }
 
         _transform.position += movePos;
         
@@ -99,11 +98,6 @@ public class CharacterMovementScript : MonoBehaviour
 
         Vector3 movePos = _transform.right * sideMovement * initialSpeed * Time.deltaTime;
 
-        if(isSprint == true)
-        {
-            movePos *= sprint;
-        }
-
         _transform.position += movePos;
         
         initialSpeed = (initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime) > 1f)? 1f : initialSpeed + (initialSpeed * offsetSpeed * Time.deltaTime);
@@ -113,13 +107,16 @@ public class CharacterMovementScript : MonoBehaviour
 
     protected internal void Jump()
     {
-        if(command == PreviousCommand.Forward && isSprint == true)
+        if(isCrouch == false)
         {
-            _rigidbody.velocity = _transform.up * jumpForce * 1.25f + _transform.forward * initialSpeed * sprint * forwardMovement;
-        }
-        else
-        {
-            _rigidbody.velocity = Vector3.up * jumpForce;
+            if(command == PreviousCommand.Forward && isSprint == true && isCrouch == false)
+            {
+                _rigidbody.velocity = _transform.up * jumpForce * 1.25f + _transform.forward * initialSpeed * sprint * forwardMovement;
+            }
+            else
+            {
+                _rigidbody.velocity = Vector3.up * jumpForce;
+            }
         }
     }
 
@@ -130,6 +127,13 @@ public class CharacterMovementScript : MonoBehaviour
             _rigidbody.velocity = _camera.forward * dash * 10f;
             totalDashTime --;
         }
+    }
+    
+    protected internal bool CanDash()
+    {
+        bool result = (totalDashTime > 0)? true : false;
+
+        return result;
     }
 
     protected internal void MoveNone()
@@ -148,6 +152,52 @@ public class CharacterMovementScript : MonoBehaviour
     protected internal void Sprint(bool _case)
     {
         isSprint = _case;
+    }
+
+    protected internal void Crouch(bool _case, bool state)
+    {
+        if(_case == true)
+        {
+            if(isSprint == true && state == true && isCrouch == false && command != PreviousCommand.Stand)
+            {
+                _rigidbody.velocity = _camera.forward * dash * 10f;
+            }
+
+            Vector3 pos = _transform.localPosition;
+            Vector3 pivotPoint = pivotTransform.position;
+
+            Vector3 point = pos - pivotPoint;
+
+            Vector3 scalePoint = new Vector3(1f, localCrouchScale, 1f);
+
+            float multiplier = scalePoint.y / _transform.localScale.y;
+
+            Vector3 result = pivotPoint + point * multiplier;
+
+            _transform.localScale = scalePoint;
+            _transform.localPosition = result;
+
+            isCrouch = true;
+        }
+        else
+        {
+            Vector3 pos = _transform.localPosition;
+            Vector3 pivotPoint = pivotTransform.position;
+
+            Vector3 point = pos - pivotPoint;
+
+            Vector3 scalePoint = new Vector3(1f, localStandScale, 1f);
+
+            float multiplier = scalePoint.y / _transform.localScale.y;
+
+            Vector3 result = pivotPoint + point * multiplier;
+
+            _transform.localScale = scalePoint;
+            _transform.localPosition = result;
+
+            isCrouch = false;
+        }
+        
     }
 
     protected internal void ChangeMovementSpeed(Vector3 vector)
@@ -177,7 +227,7 @@ public class CharacterMovementScript : MonoBehaviour
         }
         else
         {
-            if(isSprint == true)
+            if(isSprint == true && isCrouch == false && command == PreviousCommand.Forward)
             {
                 state = "Run";
             }
