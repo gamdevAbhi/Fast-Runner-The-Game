@@ -36,6 +36,7 @@ public class CharacterAttackScript : MonoBehaviour
             if(colliderLayerName == layer)
             {
                 CalculateDash(collider);
+                break;
             }
         }
     }

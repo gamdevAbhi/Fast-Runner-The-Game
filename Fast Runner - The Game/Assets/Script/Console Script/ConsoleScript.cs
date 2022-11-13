@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 [RequireComponent(typeof(ConsoleActionScript))]
@@ -18,11 +19,15 @@ public class ConsoleScript : MonoBehaviour
 
     [Header("Parameter")]
     [SerializeField] private bool isConsoleActive = false;
+
+    private Scene currentScene;
     
     private void Awake()
     {
         consoleCanvas.SetActive(isConsoleActive);
         consoleActionScript = GetComponent<ConsoleActionScript>();
+
+        currentScene = SceneManager.GetActiveScene();
     }
 
     private void Update()
@@ -96,7 +101,7 @@ public class ConsoleScript : MonoBehaviour
         {
             foreach(string cmd in command)
             {
-                if(cmd == "Backspace")
+                if(cmd == "Backspace" && consoleText.text.Length > 0)
                 {
                     consoleText.text = consoleText.text.Remove(consoleText.text.Length - 1);
                 }
@@ -157,6 +162,10 @@ public class ConsoleScript : MonoBehaviour
         else if(word[0] == "CAMERASHAKE")
         {
             consoleActionScript.CameraShake(word[1]);
+        }
+        else if(word[0] == "RESETLEVEL")
+        {
+            SceneManager.LoadSceneAsync(currentScene.name, LoadSceneMode.Single);
         }
         else
         {

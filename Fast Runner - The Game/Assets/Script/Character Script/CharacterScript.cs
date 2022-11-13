@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterGroundScript))]
 [RequireComponent(typeof(CharacterGroundImpactScript))]
 [RequireComponent(typeof(CharacterAttackScript))]
+[RequireComponent(typeof(CharacterWallRunScript))]
 public class CharacterScript : MonoBehaviour
 {
     private CharacterMovementScript characterMovementScript;
@@ -16,6 +17,7 @@ public class CharacterScript : MonoBehaviour
     private CharacterGroundScript characterGroundScript;
     private CharacterGroundImpactScript characterGroundImpactScript;
     private CharacterAttackScript characterAttackScript;
+    private CharacterWallRunScript characterWallRunScript;
 
     [Header("Script")]
     [SerializeField] private KeyMapManagerScript keyMapManagerScript;
@@ -28,6 +30,7 @@ public class CharacterScript : MonoBehaviour
         characterGroundScript = GetComponent<CharacterGroundScript>();
         characterGroundImpactScript = GetComponent<CharacterGroundImpactScript>();
         characterAttackScript = GetComponent<CharacterAttackScript>();
+        characterWallRunScript = GetComponent<CharacterWallRunScript>();
     }
 
     private void Start()
@@ -82,6 +85,7 @@ public class CharacterScript : MonoBehaviour
         foreach(string command in value)
         {
             if(cameraShakeScript.IsImpacted() == false)
+            {
                 if(command == "Forward")
                 {
                     characterMovementScript.MoveForward();
@@ -100,11 +104,20 @@ public class CharacterScript : MonoBehaviour
                 }
                 else if(command == "Jump" && characterGroundScript.CanJump() == true)
                 {
-                    characterMovementScript.Jump();
+                    characterMovementScript.Jump(false);
+                }
+                else if(command == "Jump" && characterGroundScript.CanJump() == false && characterWallRunScript.CheckWallRun())
+                {
+                    characterMovementScript.Jump(true);
                 }
                 else if(command == "Sprint" && characterGroundScript.GetGroundCheck())
                 {
                     isSprint = true;
+                }
+                else if(command == "Sprint" && characterGroundScript.GetGroundCheck() == false && characterWallRunScript.CheckWallRun())
+                {
+                    characterWallRunScript.WallRun();
+                    characterMovementScript.ResetDash();
                 }
                 else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false && characterMovementScript.CanDash())
                 {
@@ -119,6 +132,7 @@ public class CharacterScript : MonoBehaviour
                 {
                     characterMovementScript.MoveNone();
                 }
+            }
         }
 
         characterMovementScript.Crouch(isCrouch, characterGroundScript.GetGroundCheck());

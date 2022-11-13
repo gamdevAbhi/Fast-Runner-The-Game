@@ -33,7 +33,7 @@ public class CharacterGroundScript : MonoBehaviour
         }
         else if(isGround == true && delayTimeJump > 0f)
         {
-            GetComponent<CharacterMovementScript>().Jump();
+            GetComponent<CharacterMovementScript>().Jump(false);
             delayTimeJump = 0f;
         }
         else
