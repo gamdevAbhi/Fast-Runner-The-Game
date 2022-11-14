@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ConsoleActionScript : MonoBehaviour
 {
@@ -11,18 +12,21 @@ public class ConsoleActionScript : MonoBehaviour
     [Header("Script")]
     [SerializeField] private CharacterScript characterScript;
     [SerializeField] private CameraShakeScript cameraShakeScript;
-
+    
+    private Scene currentScene;
+    
     private void Awake()
     {
         resetPos = playerTransform.position;
+        currentScene = SceneManager.GetActiveScene();
     }
 
-    protected internal void ResetPos()
+    public void ResetPos(string x)
     {
         playerTransform.position = resetPos;
     }
 
-    protected internal void ChangeMovementSpeed(string coord)
+    public void ChangeMovementSpeed(string coord)
     {
         string[] coordToAxis = coord.Split(',');
 
@@ -31,21 +35,21 @@ public class ConsoleActionScript : MonoBehaviour
         characterScript.SendMessage("ChangeMovement", vector);
     }
 
-    protected internal void ChangeSprintSpeed(string value)
+    public void ChangeSprintSpeed(string value)
     {
         float valueToFloat = float.Parse(value);
 
         characterScript.SendMessage("ChangeSprint", valueToFloat);
     }
 
-    protected internal void ChangeJumpSpeed(string value)
+    public void ChangeJumpSpeed(string value)
     {
         float valueToFloat = float.Parse(value);
 
         characterScript.SendMessage("ChangeJump", valueToFloat);
     }
 
-    protected internal void ChangeLocation(string coord)
+    public void ChangeLocation(string coord)
     {
         string[] coordToAxis = coord.Split(',');
 
@@ -54,27 +58,27 @@ public class ConsoleActionScript : MonoBehaviour
         playerTransform.localPosition += vector;
     }
 
-    protected internal void ChangeDrag(string value)
+    public void ChangeDrag(string value)
     {
         playerTransform.GetComponent<Rigidbody>().drag = float.Parse(value) / 10f;
     }
 
-    protected internal void ChangeMaxSpeed(string value)
+    public void ChangeMaxSpeed(string value)
     {
         characterScript.SendMessage("ChangeMaxSpeed", float.Parse(value));
     }
 
-    protected internal void ChangeDashSpeed(string value)
+    public void ChangeDashSpeed(string value)
     {
         characterScript.SendMessage("ChangeDashSpeed", float.Parse(value));
     }
 
-    protected internal void ChangeMaxDash(string value)
+    public void ChangeMaxDash(string value)
     {
         characterScript.SendMessage("ChangeMaxDash", int.Parse(value));
     }
 
-    protected internal void CameraShake(string value)
+    public void CameraShake(string value)
     {
         if(value == "ON")
         {
@@ -86,8 +90,14 @@ public class ConsoleActionScript : MonoBehaviour
         }
     }
 
-    protected internal void ChangeOffsetSpeed(string value)
+    public void ChangeOffsetSpeed(string value)
     {
         characterScript.SendMessage("ChangeOffsetSpeed", float.Parse(value));
+    }
+
+    public void ResetLevel(string x)
+    {
+        SceneManager.LoadSceneAsync(currentScene.name, LoadSceneMode.Single);
+        Time.timeScale = 1f;
     }
 }

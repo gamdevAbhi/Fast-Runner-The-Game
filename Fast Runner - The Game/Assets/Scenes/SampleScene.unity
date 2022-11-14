@@ -1640,6 +1640,211 @@ MonoBehaviour:
   consoleArrow: {fileID: 1189086354}
   keyMapManagerScript: {fileID: 224039325}
   isConsoleActive: 0
+  consoleCode:
+  - code: RESETPOS
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ResetPos
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 0
+  - code: MOVEPOS
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeLocation
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: MOVESPEED
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeMovementSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: JUMPFORCE
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeJumpSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: SPRINTSPEED
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeSprintSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: DRAG
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeDrag
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: MAXSPEED
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeMaxSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: DASHSPEED
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeDashSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: OFFSETSPEED
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeOffsetSpeed
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: MAXDASH
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeMaxDash
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: CAMERASHAKE
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: CameraShake
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: RESETLEVEL
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ResetLevel
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 0
 --- !u!114 &653478938
 MonoBehaviour:
   m_ObjectHideFlags: 0

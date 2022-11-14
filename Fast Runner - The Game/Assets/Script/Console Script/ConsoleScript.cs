@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using TMPro;
 
 [RequireComponent(typeof(ConsoleActionScript))]
@@ -20,14 +20,13 @@ public class ConsoleScript : MonoBehaviour
     [Header("Parameter")]
     [SerializeField] private bool isConsoleActive = false;
 
-    private Scene currentScene;
-    
+    [Header("Console Codes")]
+    [SerializeField] private ConsoleCode[] consoleCode;
+
     private void Awake()
     {
         consoleCanvas.SetActive(isConsoleActive);
         consoleActionScript = GetComponent<ConsoleActionScript>();
-
-        currentScene = SceneManager.GetActiveScene();
     }
 
     private void Update()
@@ -116,62 +115,53 @@ public class ConsoleScript : MonoBehaviour
     private void CheckConsoleData()
     {
         string[] word = consoleText.text.Split(' ');
+        bool operationSuccessfull = false;
 
-        consoleArrow.color = new Color(0, 255, 0, 255);
+        foreach(ConsoleCode code in consoleCode)
+        {
+            if(code.GetCode() == word[0])
+            {
+                string output = (code._needParam == true)? word[1] : "0";
+                code.Run(output);
+                operationSuccessfull = true;
+                break;
+            }
+        }
 
-        if(word[0] == "RESETPOS")
-        {
-            consoleActionScript.ResetPos();
-        }
-        else if(word[0] == "MOVEPOS")
-        {
-            consoleActionScript.ChangeLocation(word[1]);
-        }
-        else if(word[0] == "MOVESPEED")
-        {
-            consoleActionScript.ChangeMovementSpeed(word[1]);
-        }
-        else if(word[0] == "JUMPFORCE")
-        {
-            consoleActionScript.ChangeJumpSpeed(word[1]);
-        }
-        else if(word[0] == "SPRINTSPEED")
-        {
-            consoleActionScript.ChangeSprintSpeed(word[1]);
-        }
-        else if(word[0] == "DRAG")
-        {
-            consoleActionScript.ChangeDrag(word[1]);
-        }
-        else if(word[0] == "MAXSPEED")
-        {
-            consoleActionScript.ChangeMaxSpeed(word[1]);
-        }
-        else if(word[0] == "DASHSPEED")
-        {
-            consoleActionScript.ChangeDashSpeed(word[1]);
-        }
-        else if(word[0] == "OFFSETSPEED")
-        {
-            consoleActionScript.ChangeOffsetSpeed(word[1]);
-        }
-        else if(word[0] == "MAXDASH")
-        {
-            consoleActionScript.ChangeMaxDash(word[1]);
-        }
-        else if(word[0] == "CAMERASHAKE")
-        {
-            consoleActionScript.CameraShake(word[1]);
-        }
-        else if(word[0] == "RESETLEVEL")
-        {
-            SceneManager.LoadSceneAsync(currentScene.name, LoadSceneMode.Single);
-        }
-        else
+        if(operationSuccessfull == false)
         {
             consoleArrow.color = new Color(255, 0, 0, 255);
         }
+        else
+        {
+            consoleArrow.color = new Color(0, 255, 0, 255);
+        }
 
         consoleText.text = "";
+    }
+}
+
+[System.Serializable]
+public class ConsoleCode
+{   
+    [SerializeField] private string code;
+    [SerializeField] private UnityEvent<string> referenceMethod;
+    [SerializeField] private bool needParam = true;
+    public bool _needParam
+    {
+        get
+        {
+            return needParam;
+        }
+    }
+
+    protected internal void Run(string value)
+    {
+        referenceMethod.Invoke(value);
+    }
+
+    protected internal string GetCode()
+    {
+        return code.ToUpper();
     }
 }
