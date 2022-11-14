@@ -100,4 +100,9 @@ public class ConsoleActionScript : MonoBehaviour
         SceneManager.LoadSceneAsync(currentScene.name, LoadSceneMode.Single);
         Time.timeScale = 1f;
     }
+
+    public void WallRunSpeed(string value)
+    {
+        characterScript.SendMessage("ChangeWallRunSpeed", float.Parse(value));
+    }
 }

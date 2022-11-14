@@ -43,14 +43,13 @@ public class CharacterScript : MonoBehaviour
     private void Update()
     {
         List<string> value = keyMapManagerScript.GetAction("CharacterdMap");
-        
-        MoveCharacter(value);
 
         if(value.Count == 0)
         {
             value.Add("Stand");
-            MoveCharacter(value);
         }
+        
+        MoveCharacter(value);
 
         value = keyMapManagerScript.GetAction("MouseMove");
 
@@ -81,33 +80,19 @@ public class CharacterScript : MonoBehaviour
     {
         bool isSprint = false;
         bool isCrouch = false;
+        bool isWallRunning = false;
 
         foreach(string command in value)
         {
             if(cameraShakeScript.IsImpacted() == false)
             {
-                if(command == "Forward")
-                {
-                    characterMovementScript.MoveForward();
-                }
-                else if(command == "Backward")
-                {
-                    characterMovementScript.MoveBackward();
-                }
-                else if(command == "Left")
-                {
-                    characterMovementScript.MoveLeft();
-                }
-                else if(command == "Right")
-                {
-                    characterMovementScript.MoveRight();
-                }
-                else if(command == "Jump" && characterGroundScript.CanJump() == true)
+                if(command == "Jump" && characterGroundScript.CanJump() == true)
                 {
                     characterMovementScript.Jump(false);
                 }
                 else if(command == "Jump" && characterGroundScript.CanJump() == false && characterWallRunScript.CheckWallRun())
                 {
+                    characterWallRunScript.WallJump(true);
                     characterMovementScript.Jump(true);
                 }
                 else if(command == "Sprint" && characterGroundScript.GetGroundCheck())
@@ -116,17 +101,34 @@ public class CharacterScript : MonoBehaviour
                 }
                 else if(command == "Sprint" && characterGroundScript.GetGroundCheck() == false && characterWallRunScript.CheckWallRun())
                 {
+                    isWallRunning = true;
                     characterWallRunScript.WallRun();
                     characterMovementScript.ResetDash();
                 }
-                else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false && characterMovementScript.CanDash())
+                else if(command == "Dash" && characterGroundScript.GetGroundCheck() == false && characterMovementScript.CanDash() && isWallRunning == false)
                 {
                     characterMovementScript.Dash();
                     characterAttackScript.Status(true);
                 }
-                else if(command == "Crouch")
+                else if(command == "Crouch" && isWallRunning == false)
                 {
                     isCrouch = true;
+                }
+                else if(command == "Forward" && isWallRunning == false)
+                {
+                    characterMovementScript.MoveForward();
+                }
+                else if(command == "Backward" && isWallRunning == false)
+                {
+                    characterMovementScript.MoveBackward();
+                }
+                else if(command == "Left" && isWallRunning == false)
+                {
+                    characterMovementScript.MoveLeft();
+                }
+                else if(command == "Right" && isWallRunning == false)
+                {
+                    characterMovementScript.MoveRight();
                 }
                 else if(command == "Stand")
                 {
@@ -178,5 +180,10 @@ public class CharacterScript : MonoBehaviour
     private void ChangeOffsetSpeed(float value)
     {
         characterMovementScript.ChangeOffsetSpeed(value);
+    }
+
+    private void ChangeWallRunSpeed(float value)
+    {
+        characterWallRunScript.ChangeWallRunSpeed(value);
     }
 }

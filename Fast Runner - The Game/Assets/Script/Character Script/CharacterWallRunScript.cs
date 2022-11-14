@@ -16,6 +16,7 @@ public class CharacterWallRunScript : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float rayDistance = 0.1f;
     [SerializeField] private bool isWallTouch = false;
+    [SerializeField] private bool isJump = false;
 
     private Vector3 forwardDirection;
     private Rigidbody _rigidbody;
@@ -33,6 +34,12 @@ public class CharacterWallRunScript : MonoBehaviour
             if(layer == (layer | (1 << collider.gameObject.layer)))
             {
                 isWallTouch = CanRun(layer, collider.transform.gameObject);
+
+                if(isWallTouch == true)
+                {
+                    isJump = false;
+                }
+
                 break;
             }
         }
@@ -63,6 +70,7 @@ public class CharacterWallRunScript : MonoBehaviour
         {
             currentWall = null;
             isWallTouch = false;
+            isJump = false;
             forwardDirection = Vector3.zero;
         }
     }
@@ -91,9 +99,22 @@ public class CharacterWallRunScript : MonoBehaviour
     {
         return isWallTouch;
     }
+
+    protected internal void WallJump(bool _case)
+    {
+        isJump = _case;
+    }
     
     protected internal void WallRun()
     {
-        _rigidbody.velocity = forwardDirection * speed;
+        if(isJump == false)
+        {
+            _rigidbody.velocity = forwardDirection * speed;
+        }
+    }
+
+    protected internal void ChangeWallRunSpeed(float value)
+    {
+        speed = value;
     }
 }

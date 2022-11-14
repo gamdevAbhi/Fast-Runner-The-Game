@@ -10,6 +10,43 @@ public class KeyMapManagerScript : MonoBehaviour
     [SerializeField] private List<KeyMap> consoleMap;
     [SerializeField] private InputManagerScript inputManagerScript;
 
+    private void Start()
+    {
+        characterMap = PrioritySet(characterMap);
+        consoleMap = PrioritySet(consoleMap);
+    }
+
+    protected internal List<KeyMap> PrioritySet(List<KeyMap> map)
+    {
+        List<KeyMap> mapTemp = new List<KeyMap>();
+
+        foreach(KeyMap key in map)
+        {
+            if(key.GetPriority() == "First")
+            {
+                mapTemp.Add(key);
+            }
+        }
+
+        foreach(KeyMap key in map)
+        {
+            if(key.GetPriority() == "Second")
+            {
+                mapTemp.Add(key);
+            }
+        }
+
+        foreach(KeyMap key in map)
+        {
+            if(key.GetPriority() == "Third")
+            {
+                mapTemp.Add(key);
+            }
+        }
+
+        return mapTemp;
+    }
+
     protected internal List<string> GetAction(string command)
     {
         List<string> value = new List<string>();
@@ -48,8 +85,11 @@ public class KeyMap
     [SerializeField] private string keyName;
     private enum MapType {Constant, Primary};
     private enum ActionType {Press, Hold, Release};
+    private enum Priority {First, Second, Third};
     [SerializeField] private MapType mapType;
     [SerializeField] private ActionType actionType;
+    [SerializeField] private Priority priority;
+
 
     protected internal string KeyName()
     {
@@ -79,6 +119,22 @@ public class KeyMap
         else
         {
             return "Release";
+        }
+    }
+
+    protected internal string GetPriority()
+    {
+        if(priority == Priority.First)
+        {
+            return "First";
+        }
+        else if(priority == Priority.Second)
+        {
+            return "Second";
+        }
+        else
+        {
+            return "Third";
         }
     }
 }

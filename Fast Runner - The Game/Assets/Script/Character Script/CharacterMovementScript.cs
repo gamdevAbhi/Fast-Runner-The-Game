@@ -107,15 +107,15 @@ public class CharacterMovementScript : MonoBehaviour
 
     protected internal void Jump(bool wallRun)
     {
-        if(isCrouch == false)
+        if(wallRun == true)
         {
-            if(command == PreviousCommand.Forward && isSprint == true && isCrouch == false)
+            _rigidbody.velocity = _transform.up * jumpForce + _transform.forward * initialSpeed * sprint * forwardMovement;
+        }
+        else if(isCrouch == false && wallRun == false)
+        {
+            if(command == PreviousCommand.Forward && isSprint == true)
             {
-                _rigidbody.velocity = _transform.up * jumpForce * 1.25f + _transform.forward * initialSpeed * sprint * forwardMovement;
-            }
-            if(wallRun == true)
-            {
-                _rigidbody.velocity = _transform.up * jumpForce * 1.5f + _transform.forward * initialSpeed * sprint * forwardMovement * 1.5f;
+                _rigidbody.velocity = _transform.up * jumpForce * 1.2f + _transform.forward * initialSpeed * sprint * forwardMovement / 2f;
             }
             else
             {
