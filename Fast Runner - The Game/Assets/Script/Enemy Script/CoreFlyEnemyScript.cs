@@ -2,18 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyFireScript))]
 public class CoreFlyEnemyScript : MonoBehaviour
 {
     [Header("Varibles")]
     [SerializeField] private float followSpeed = 10f;
     [SerializeField] private float rotatingSpeed = 8f;
     [SerializeField] private float lookingSpeed = 1f;
-    [SerializeField] private float maxDistance = 5f;
+    [SerializeField] private float maxDistance = 7f;
+    [SerializeField] private float limitDistnace = 4f;
+    [SerializeField] private float minDistance = 1.5f;
     [SerializeField] private float stableVelocity = 2f;
     [SerializeField] private float stablizePower = 50f;
 
-    private enum OrderState {Follow, Rotate, Damage};
+    private enum OrderState {Follow, Back, Rotate, Damage};
     private enum BehaviorState {Target, Search};
+    private float cooldown = 0f;
+    
+    private EnemyFireScript enemyFireScript;
 
     [Header("Settings")]
     [SerializeField] private bool drawDirection = true;
@@ -23,9 +29,33 @@ public class CoreFlyEnemyScript : MonoBehaviour
 
     [Header("Transform")]
     [SerializeField] private Transform targetTransform;
+    [SerializeField] private Transform coreTransfrom;
+    [SerializeField] private Transform worldBulletParent;
+
+    private void Start()
+    {
+        if(enemyFireScript == null)
+            enemyFireScript = gameObject.GetComponent<EnemyFireScript>();
+    }
 
     private void Update()
     {
+        if(cooldown > 0f)
+        {
+            cooldown -= Time.deltaTime;
+        }
+        else
+        {
+            Command();
+        }
+
+        if(isActive == true)
+            LookBehavior(currentBehavior);
+    }
+    private void Command()
+    {
+        bool isReady = false;
+
         Vector3 distance = (targetTransform.position - this.transform.position);
         float magnitude = Mathf.Sqrt(distance.x * distance.x + distance.y * distance.y + distance.z * distance.z);
 
@@ -37,22 +67,35 @@ public class CoreFlyEnemyScript : MonoBehaviour
             }
             else
             {
-                if(magnitude > maxDistance)
+                if(magnitude > limitDistnace && currentState == OrderState.Follow)
+                {
+                    currentState = OrderState.Follow;
+
+                    if(magnitude <= maxDistance)
+                        isReady = true;
+                }
+                else if(magnitude > maxDistance && currentState == OrderState.Rotate)
                 {
                     currentState = OrderState.Follow;
                 }
-                else
+                else if(magnitude > minDistance)
                 {
                     currentState = OrderState.Rotate;
+                    isReady = true;
                 }
-
-                LookBehavior(currentBehavior);
+                else if(magnitude <= minDistance && currentState == OrderState.Rotate)
+                {
+                    currentState = OrderState.Back;
+                    isReady = true;
+                }
             }
 
             Order(currentState, magnitude);
+
+            if(isReady && currentBehavior != BehaviorState.Search)
+                cooldown = enemyFireScript.Fire(targetTransform, coreTransfrom.position, worldBulletParent);
         }
     }
-
     private bool StablityCheck(float minVelocity)
     {
         Rigidbody rigidbody = GetComponent<Rigidbody>();
@@ -92,6 +135,10 @@ public class CoreFlyEnemyScript : MonoBehaviour
         else if(currentState == OrderState.Rotate)
         {
            RotateAroundTarget(targetTransform.position, rotatingSpeed, magnitude);
+        }
+        else if(currentState == OrderState.Back)
+        {
+            FollowTarget(-transform.forward, followSpeed);
         }
     }
 
