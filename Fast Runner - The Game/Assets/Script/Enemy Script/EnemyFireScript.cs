@@ -13,6 +13,7 @@ public class EnemyFireScript : MonoBehaviour
 
     [Header("Others")]
     [SerializeField] private GameObject fireObject;
+    [SerializeField] private ParticleSystem[] muzzleObject;
 
     private float rateTime;
     private bool canFire = false;
@@ -40,6 +41,8 @@ public class EnemyFireScript : MonoBehaviour
     {
         if(canFire == true)
         {
+            Muzzle();
+            
             GameObject fireObj = Instantiate(fireObject, location, Quaternion.identity, parent);
 
             BulletScript bulletScript = fireObj.GetComponent<BulletScript>();
@@ -63,6 +66,14 @@ public class EnemyFireScript : MonoBehaviour
         else
         {
             return 0f;
+        }
+    }
+
+    private void Muzzle()
+    {
+        foreach(ParticleSystem muzzle in muzzleObject)
+        {
+            muzzle.Play();
         }
     }
 }
