@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BulletScript : MonoBehaviour
 {
+    [SerializeField] private GameObject fireTouch;
     private GameObject instantiater;
     private Transform target;
     private Vector3 startPos;
@@ -94,6 +95,7 @@ public class BulletScript : MonoBehaviour
     {
         if(target != instantiater)
         {
+            Instantiate(fireTouch, transform.position, instantiater.transform.rotation, this.transform.parent);
             Destroy(this.gameObject);
         }
     }

@@ -252,7 +252,7 @@ GameObject:
   m_Layer: 0
   m_Name: Patrol1 (3)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -2627,7 +2627,7 @@ GameObject:
   m_Layer: 0
   m_Name: Patrol1
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -2966,7 +2966,7 @@ GameObject:
   m_Layer: 0
   m_Name: Patrol1 (2)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -4518,7 +4518,7 @@ GameObject:
   m_Layer: 0
   m_Name: Patrol1 (1)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -5509,6 +5509,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
+      propertyPath: targetDistance
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
+      propertyPath: currentBehavior
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: targetTransform
       value: 
       objectReference: {fileID: 963194228}
@@ -5516,6 +5524,10 @@ PrefabInstance:
       propertyPath: worldBulletParent
       value: 
       objectReference: {fileID: 722238551}
+    - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
+      propertyPath: patrolPoint.Array.size
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: patrolPoint.Array.data[0]
       value: 

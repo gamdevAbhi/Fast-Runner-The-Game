@@ -19,7 +19,7 @@ public class CoreFlyEnemyScript : MonoBehaviour
     [SerializeField] private float maxFollowDistance = 40f;
 
     [Header("Patrol Behavior")]
-    [SerializeField] [Range(0, 360)] private float POV = 90f;
+    [SerializeField] [Range(0, 360)] private float FOV = 90f;
     [SerializeField] private float patrolDistance = 10f;
     [SerializeField] private float patrolMinDistance = 0.5f;
     [SerializeField] private float targetDistance = 12f;
@@ -112,9 +112,9 @@ public class CoreFlyEnemyScript : MonoBehaviour
         float dotProduct = Vector3.Dot(transform.forward.normalized, targetDirection.normalized);
         float magnitude =  Mathf.Sqrt(targetDirection.x * targetDirection.x + targetDirection.y * targetDirection.y + targetDirection.z * targetDirection.z);
 
-        float dotPOV = 1 - (POV / 360f * 2);
+        float dotFOV = 1 - (FOV / 360f * 2);
 
-        if(dotPOV <= dotProduct && magnitude <= targetDistance)
+        if(dotFOV <= dotProduct && magnitude <= targetDistance)
         {
             currentBehavior = BehaviorState.Target;
         }

@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59378ecc90d45043829c8fcfdc3c473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fireTouch: {fileID: 6906500616046218344, guid: ff868f8b9f8784440b0f44e5ddb3e223, type: 3}
 --- !u!135 &6449579791761351832
 SphereCollider:
   m_ObjectHideFlags: 0
