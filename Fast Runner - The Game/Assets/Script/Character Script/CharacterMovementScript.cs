@@ -235,6 +235,10 @@ public class CharacterMovementScript : MonoBehaviour
             {
                 state = "Run";
             }
+            else if(isCrouch == true && command == PreviousCommand.Stand)
+            {
+                state = "Crouch";
+            }
             else
             {
                 state = "Walk";

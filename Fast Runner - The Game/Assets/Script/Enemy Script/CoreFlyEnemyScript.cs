@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyFireScript))]
+[RequireComponent(typeof(EnemyHealthScript))]
 public class CoreFlyEnemyScript : MonoBehaviour
 {
     [Header("Varibles")]
     [SerializeField] private float followSpeed = 10f;
     [SerializeField] private float rotatingSpeed = 8f;
     [SerializeField] private float lookingSpeed = 1f;
+    [SerializeField] private LayerMask layerView;
+    [SerializeField] private bool isAlive = true;
 
     [Header("Target Behavior")]
     [SerializeField] private float maxDistance = 7f;
@@ -34,6 +37,10 @@ public class CoreFlyEnemyScript : MonoBehaviour
     [SerializeField] private Color targetColor;
     [SerializeField] private Color disableColor;
     [SerializeField] private float intensity = 1.3f;
+
+    [Header("Particle")]
+    [SerializeField] private GameObject destroyParticle;
+    [SerializeField] private GameObject destroyParticleSide;
  
     private enum OrderState {Follow, Back, Rotate, Damage};
     private enum BehaviorState {Target, PatrolFront, PatrolBack, Search, Disable};
@@ -43,6 +50,7 @@ public class CoreFlyEnemyScript : MonoBehaviour
     private bool hasSearch = false;
     
     private EnemyFireScript enemyFireScript;
+    private EnemyHealthScript enemyHealthScript;
 
     [Header("Settings")]
     [SerializeField] private bool drawDirection = true;
@@ -62,26 +70,51 @@ public class CoreFlyEnemyScript : MonoBehaviour
     {
         if(enemyFireScript == null)
             enemyFireScript = gameObject.GetComponent<EnemyFireScript>();
+
+        if(enemyHealthScript == null)
+            enemyHealthScript = gameObject.GetComponent<EnemyHealthScript>();
     }
 
     private void Update()
     {
+
+        if(StablityCheck(stableVelocity))
+        {
+            currentState = OrderState.Damage;
+        }
+        else
+        {
+            currentState = OrderState.Follow;
+
+            if(isAlive == false)
+            {
+                BlastParticle();
+                Destroy(this.gameObject);
+            }
+        }
+
         if(cooldown > 0f)
         {
             cooldown -= Time.deltaTime;
         }
 
-        if(currentBehavior == BehaviorState.Target)
+        if(currentBehavior == BehaviorState.Target && currentState != OrderState.Damage)
         {
             if(cooldown <= 0f)
                 TargetCommand();
         }
-        else if(currentBehavior != BehaviorState.Disable)
+        else if(currentBehavior != BehaviorState.Disable && currentState != OrderState.Damage)
         {
             NonTargetCommand();
         }
 
         ChangeColor();
+    }
+
+    private void BlastParticle() 
+    {
+        Instantiate(destroyParticle, transform.position, Quaternion.identity, worldBulletParent);
+        Instantiate(destroyParticleSide, transform.position, Quaternion.identity, worldBulletParent);
     }
 
     private void ChangeColor()
@@ -114,7 +147,11 @@ public class CoreFlyEnemyScript : MonoBehaviour
 
         float dotFOV = 1 - (FOV / 360f * 2);
 
-        if(dotFOV <= dotProduct && magnitude <= targetDistance)
+        RaycastHit hit;
+        Physics.Raycast(transform.position, targetDirection.normalized, out hit, targetDistance, layerView);
+        // Debug.DrawLine(transform.position, hit.point, targetColor); // TODO: remove it
+
+        if(dotFOV <= dotProduct && magnitude <= targetDistance && hit.collider.gameObject.layer == targetTransform.gameObject.layer)
         {
             currentBehavior = BehaviorState.Target;
         }
@@ -184,60 +221,55 @@ public class CoreFlyEnemyScript : MonoBehaviour
         bool isReady = false;
 
         Vector3 distance = (targetTransform.position - this.transform.position);
-        float magnitude = Mathf.Sqrt(distance.x * distance.x + distance.y * distance.y + distance.z * distance.z);
+        float magnitude = Mathf.Sqrt(distance.x * distance.x + distance.y * distance.y + distance.z * distance.z);     
 
-        if(currentBehavior != BehaviorState.Disable)
-        {            
-            if(StablityCheck(stableVelocity))
-            {
-                currentState = OrderState.Damage;
-            }
-            else
-            {
-                if(magnitude >= maxFollowDistance)
-                {
-                    transform.position = patrolPoint[patrolIndex].position;
+        if(magnitude >= maxFollowDistance)
+        {
+            transform.position = patrolPoint[patrolIndex].position;
 
-                    currentBehavior = BehaviorState.PatrolFront;
-                }
-
-                if(magnitude > limitDistnace && currentState == OrderState.Follow)
-                {
-                    currentState = OrderState.Follow;
-
-                    if(magnitude <= maxDistance)
-                        isReady = true;
-                }
-                else if(magnitude > maxDistance && currentState == OrderState.Rotate)
-                {
-                    currentState = OrderState.Follow;
-                }
-                else if(magnitude > minDistance)
-                {
-                    currentState = OrderState.Rotate;
-                    isReady = true;
-                }
-                else if(magnitude <= minDistance && currentState == OrderState.Rotate)
-                {
-                    currentState = OrderState.Back;
-                    isReady = true;
-                }
-
-                LookAtTarget(targetTransform.position, lookingSpeed, drawDirection);
-            }
-
-            Order(currentState, magnitude);
-
-            if(isReady && currentBehavior != BehaviorState.Search)
-                cooldown = enemyFireScript.Fire(targetTransform, coreTransfrom.position, worldBulletParent);
+            currentBehavior = BehaviorState.PatrolFront;
         }
+
+        if(magnitude > limitDistnace && currentState == OrderState.Follow)
+        {
+            currentState = OrderState.Follow;
+
+            if(magnitude <= maxDistance)
+                isReady = true;
+        }
+        else if(magnitude > maxDistance && currentState == OrderState.Rotate)
+        {
+            currentState = OrderState.Follow;
+        }
+        else if(magnitude > minDistance)
+        {
+            currentState = OrderState.Rotate;
+            isReady = true;
+        }
+        else if(magnitude <= minDistance && currentState == OrderState.Rotate)
+        {
+            currentState = OrderState.Back;
+            isReady = true;
+        }
+
+        LookAtTarget(targetTransform.position, lookingSpeed, drawDirection);
+
+        Order(currentState, magnitude);
+
+        if(isReady && currentBehavior != BehaviorState.Search)
+            cooldown = enemyFireScript.Fire(targetTransform, coreTransfrom.position, worldBulletParent);
     }
+
+    private void GiveDamage(float damage)
+    {
+        isAlive =  !enemyHealthScript.DamageTake(damage);
+        currentBehavior = BehaviorState.Target;
+    }
+
     private bool StablityCheck(float minVelocity)
     {
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         Vector3 localVelocity = rigidbody.transform.InverseTransformDirection(rigidbody.velocity);
-
-        bool result = true;
 
         if(CheckVelocity(localVelocity.x, minVelocity) || CheckVelocity(localVelocity.y, minVelocity) || CheckVelocity(localVelocity.z, minVelocity))
         {
@@ -247,10 +279,10 @@ public class CoreFlyEnemyScript : MonoBehaviour
         }
         else
         {
-            result = false;
-
-            rigidbody.velocity = new Vector3(0f, 0f, 0f);
+            rigidbody.velocity = Vector3.zero;
         }
+
+        bool result = (rigidbody.velocity == Vector3.zero)? false : true;
 
         return result;
     }
@@ -302,5 +334,17 @@ public class CoreFlyEnemyScript : MonoBehaviour
     private void RotateAroundTarget(Vector3 targetPos, float speed, float radius)
     {
         this.transform.RotateAround(targetPos, transform.up, speed / radius * Time.deltaTime * 40f);
+    }
+
+    protected internal void Initialized(Transform patrol, Transform target, Transform parentBullet)
+    {
+        foreach(Transform point in patrol)
+        {
+            patrolPoint.Add(point);
+        }
+
+        targetTransform = target;
+
+        worldBulletParent = parentBullet;
     }
 }

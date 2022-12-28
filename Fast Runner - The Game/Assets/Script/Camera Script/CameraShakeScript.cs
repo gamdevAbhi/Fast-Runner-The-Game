@@ -212,6 +212,10 @@ public class CameraShakeScript : MonoBehaviour
         {
             shakeType = ShakeType.Stand;
         }
+        else if(status == "Crouch"  && shakeType != ShakeType.Impact)
+        {
+            shakeType = ShakeType.Stand;
+        }
         else if(status == "Fall"  && shakeType != ShakeType.Impact)
         {
             shakeType = ShakeType.Fall;

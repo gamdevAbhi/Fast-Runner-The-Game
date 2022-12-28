@@ -7,6 +7,7 @@ public class CharacterAttackScript : MonoBehaviour
     [Header("Parameter")]
     [SerializeField] private float dashPower = 20f;
     [SerializeField] private float reactionForce = 2f;
+    [SerializeField] private float dashDamage = 3.5f;
     [SerializeField] private float minDashVelocity = 3f;
     [SerializeField] private float relativeMass = 4f;
     [SerializeField] private bool isDash = false;
@@ -51,11 +52,23 @@ public class CharacterAttackScript : MonoBehaviour
             _colliderRigid.velocity = _camera.forward * _camera.InverseTransformDirection(_rigidbody.velocity).z * dashPower / mass;
 
             _rigidbody.velocity = -_camera.forward * reactionForce;
+
+            try
+            {
+                float damage = Mathf.Sqrt(_rigidbody.velocity.x * _rigidbody.velocity.x + _rigidbody.velocity.y * _rigidbody.velocity.y + _rigidbody.velocity.z * _rigidbody.velocity.z);
+                collider.gameObject.SendMessage("GiveDamage", damage * dashDamage);
+            }
+            catch{}
         }
     }
 
     protected internal void Status(bool _case)
     {
         isDash = _case;
+    }
+
+    protected internal void ChangeDashDamage(float value)
+    {
+        dashDamage = value;
     }
 }

@@ -7,6 +7,12 @@ public class ConsoleActionScript : MonoBehaviour
 {
     [Header("Transform")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform enemyParent;
+    [SerializeField] private Transform patrolPoint;
+    [SerializeField] private Transform bulletParent;
+
+    [Header("Enemy")]
+    [SerializeField] private GameObject coreFlyEnemy;
     private Vector3 resetPos;
 
     [Header("Script")]
@@ -73,6 +79,11 @@ public class ConsoleActionScript : MonoBehaviour
         characterScript.SendMessage("ChangeDashSpeed", float.Parse(value));
     }
 
+    public void ChangeDashDamage(string value)
+    {
+        characterScript.SendMessage("ChangeDashDamage", float.Parse(value));
+    }
+
     public void ChangeMaxDash(string value)
     {
         characterScript.SendMessage("ChangeMaxDash", int.Parse(value));
@@ -104,5 +115,22 @@ public class ConsoleActionScript : MonoBehaviour
     public void WallRunSpeed(string value)
     {
         characterScript.SendMessage("ChangeWallRunSpeed", float.Parse(value));
+    }
+
+    public void SpawnEnemy(string value)
+    {
+        GameObject enemy = null;
+
+        if(value == "COREFLY")
+        {
+            enemy = Instantiate(coreFlyEnemy, patrolPoint.GetChild(0).position, Quaternion.identity, enemyParent);
+
+            enemy.GetComponent<CoreFlyEnemyScript>().Initialized(patrolPoint, playerTransform, bulletParent);
+        }
+    }
+
+    public void Quit(string x)
+    {
+        Application.Quit();
     }
 }

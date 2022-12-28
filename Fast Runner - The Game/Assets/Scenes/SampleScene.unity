@@ -1920,6 +1920,57 @@ MonoBehaviour:
             m_BoolArgument: 0
           m_CallState: 2
     needParam: 1
+  - code: SPAWNENEMY
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: SpawnEnemy
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
+  - code: EXIT
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: Quit
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 0
+  - code: CHANGEDASHDAMAGE
+    referenceMethod:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 653478938}
+          m_TargetAssemblyTypeName: ConsoleActionScript, Assembly-CSharp
+          m_MethodName: ChangeDashDamage
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 0,100,0
+            m_BoolArgument: 0
+          m_CallState: 2
+    needParam: 1
 --- !u!114 &653478938
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1933,6 +1984,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 1321334980}
+  enemyParent: {fileID: 1638432233}
+  patrolPoint: {fileID: 173233870}
+  bulletParent: {fileID: 722238551}
+  coreFlyEnemy: {fileID: 7208206848770392475, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
   characterScript: {fileID: 1321334983}
   cameraShakeScript: {fileID: 963194229}
 --- !u!1 &705507993
@@ -2153,7 +2208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 722238551}
   m_Layer: 0
-  m_Name: BulletParent
+  m_Name: Particle and Bullets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3742,6 +3797,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dashPower: 2
   reactionForce: 6
+  dashDamage: 5
   minDashVelocity: 3.5
   relativeMass: 4
   isDash: 0
@@ -5470,31 +5526,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.39
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.99
+      value: 12.75
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 87.7
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5502,24 +5558,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199969, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
-      propertyPath: targetDistance
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
-      propertyPath: currentBehavior
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: targetTransform
       value: 
-      objectReference: {fileID: 963194228}
+      objectReference: {fileID: 1321334980}
     - target: {fileID: 8017358812280199970, guid: a4988b1a2c779b4439bcf23d3949d91c, type: 3}
       propertyPath: worldBulletParent
       value: 

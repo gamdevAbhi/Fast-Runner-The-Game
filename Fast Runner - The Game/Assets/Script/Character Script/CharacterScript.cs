@@ -113,6 +113,11 @@ public class CharacterScript : MonoBehaviour
                 else if(command == "Crouch" && isWallRunning == false)
                 {
                     isCrouch = true;
+
+                    if(value.Count == 1)
+                    {
+                        characterMovementScript.MoveNone();
+                    }
                 }
                 else if(command == "Forward" && isWallRunning == false)
                 {
@@ -185,5 +190,10 @@ public class CharacterScript : MonoBehaviour
     private void ChangeWallRunSpeed(float value)
     {
         characterWallRunScript.ChangeWallRunSpeed(value);
+    }
+
+    private void ChangeDashDamage(float value)
+    {
+        characterAttackScript.ChangeDashDamage(value);
     }
 }

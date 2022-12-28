@@ -82,8 +82,8 @@ public class BulletScript : MonoBehaviour
 
         if(magnitude <= maxDistance)
             transform.position += direction * speed * Time.deltaTime;
-        //else
-            // BulletDestroy(null);
+        else
+            BulletDestroy(null);
     }
 
     private void OnCollisionEnter(Collision collider)
@@ -96,6 +96,10 @@ public class BulletScript : MonoBehaviour
         if(target != instantiater)
         {
             Instantiate(fireTouch, transform.position, instantiater.transform.rotation, this.transform.parent);
+            Destroy(this.gameObject);
+        }
+        else if(target == null)
+        {
             Destroy(this.gameObject);
         }
     }
